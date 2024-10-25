@@ -4,8 +4,6 @@ import tracemalloc
 import scipy
 from GameState import *
 
-def manhattan_distance(a:Tuple[int,int], b:Tuple[int,int]):
-    return abs(a[0] - b[0]) + abs(a[1] - b[1])
 
 def breadth_first_search(grid, start, stones, switches):
     state = (start, tuple(stones))
