@@ -1,105 +1,183 @@
+from typing import List, Optional, Tuple, Set, Dict
+from dataclasses import dataclass
 from collections import deque
+import logging
+import heapq
 import time
 import tracemalloc
-import scipy
-from GameState import *
+from game_state import GameState
+from copy import deepcopy
+import psutil
 
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
-def breadth_first_search(grid, start, stones, switches):
-    state = (start, tuple(stones))
-    explored = set() 
-    frontier = deque([(state, "")])  
-    directions = [(-1, 0), (1, 0), (0, -1), (0, 1)] 
-    move_mapping = {
-        (-1, 0): "u", (1, 0): "d", (0, -1): "l", (0, 1): "r", 
-        (-1, 0, "push"): "U", (1, 0, "push"): "D", (0, -1, "push"): "L", (0, 1, "push"): "R"
-    }
-    step = 0
-    cost = 0
-    tracemalloc.start()  
-    start_time = time.time() 
-    print("BFS")
-    while frontier:
-        current_state, path = frontier.popleft()  
-        char_pos, stone_positions = current_state
+@dataclass
+class SearchResult:
+    steps: int
+    path: List[str]
+    explored_states: int
+    execution_time: float
+    memory_used: float
+    cost: float = 0.0
+
+class PriorityQueue:
+    def __init__(self):
+        self._queue = []
+        self._index = 0
+
+    def push(self, item, priority):
+        heapq.heappush(self._queue, (priority, self._index, item))
+        self._index += 1
+
+    def pop(self):
+        return heapq.heappop(self._queue)[-1]
+
+    def empty(self):
+        return len(self._queue) == 0
+
+class Searcher:
+    def __init__(self, initial_state: GameState):
+        self.initial_state = initial_state
+
+    def _checking_setup(self):
+        tracemalloc.start()
+        return time.time()
+
+    def _end_profiling(self, start_time: float) -> Tuple[float, float]:
+        end_time = time.time()
+        memory_used = tracemalloc.get_traced_memory()[1] / (1024 ** 2)
+        tracemalloc.stop()
+        return end_time - start_time, memory_used
+
+    def breadth_first_search(self) -> Optional[SearchResult]:
+        start_time = self._checking_setup()
+        frontier = deque([(self.initial_state, [])])
+        explored = set()
+        steps = 0
+
+        while frontier:
+            current_state, path = frontier.popleft()
+            if current_state.is_solved():
+                exec_time, memory = self._end_profiling(start_time)
+                return SearchResult(
+                    steps=steps,
+                    path=current_state.get_path(),
+                    explored_states=len(explored),
+                    execution_time=exec_time,
+                    memory_used=memory
+                )
+            
+            state_key = current_state.get_state_key()
+            if state_key in explored:
+                continue
+                
+            explored.add(state_key)
+            
+            for successor in current_state.get_successor_states():
+                if successor.get_state_key() not in explored:
+                    steps += 1
+                    frontier.append((successor, path + [successor.get_path()[-1]]))
         
-        if is_goal_state(stone_positions, switches):
-            end_time = time.time()
-            memory_used = tracemalloc.get_traced_memory()[1] / (1024 ** 2)  
-            tracemalloc.stop()
-            return step, path, len(explored), end_time - start_time, memory_used
-
-        if current_state in explored:
-            continue
-        explored.add(current_state)
-        for direction in directions:
-            new_char_pos = (char_pos[0] + direction[0], char_pos[1] + direction[1])
-
-            if new_char_pos in stone_positions:
-                stone_index = stone_positions.index(new_char_pos)
-                new_stone_pos = (new_char_pos[0] + direction[0], new_char_pos[1] + direction[1])
-
-                if is_valid_push(char_pos, new_char_pos, direction, grid, stone_positions):
-                    new_stone_positions = list(stone_positions)
-                    new_stone_positions[stone_index] = new_stone_pos  
-                    new_state = (new_char_pos, tuple(new_stone_positions))  
-                    new_path = path + move_mapping[(direction[0], direction[1], "push")]
-                    frontier.append((new_state, new_path))  
-
-            elif is_valid_move(new_char_pos, grid, stone_positions):
-                new_state = (new_char_pos, stone_positions)  
-                new_path = path + move_mapping[(direction[0], direction[1])]
-                step += 1 
-                frontier.append((new_state, new_path))  
-
-    return None, None, None, None
-
-def depth_first_search(grid, start, stones, switches):
-    state = (start, tuple(stones))
-    explored = set() 
-    frontier = [(state, "")] 
-    directions = [(-1, 0), (1, 0), (0, -1), (0, 1)] 
-    move_mapping = {
-        (-1, 0): "u", (1, 0): "d", (0, -1): "l", (0, 1): "r", 
-        (-1, 0, "push"): "U", (1, 0, "push"): "D", (0, -1, "push"): "L", (0, 1, "push"): "R"
-    }
-    step = 0
-    tracemalloc.start()  
-    start_time = time.time() 
-    print("DFS")
+        return None
     
-    while frontier:
-        current_state, path = frontier.pop()
-        char_pos, stone_positions = current_state
+    def uniform_cost_search(self) -> Optional[SearchResult]:
+        """
+        Implements Uniform Cost Search for weighted Sokoban puzzle.
+        Returns SearchResult with solution path and metrics, or None if no solution found.
+        """
+        start_time = time.time()
+        process = psutil.Process()
+        initial_memory = process.memory_info().rss
         
-        if is_goal_state(stone_positions, switches):
-            end_time = time.time()
-            memory_used = tracemalloc.get_traced_memory()[1] / (1024 ** 2)  
-            tracemalloc.stop()
-            return step, path, len(explored), end_time - start_time, memory_used
-
-        if current_state in explored:
-            continue
-        explored.add(current_state)
+        # Initialize data structures
+        frontier = PriorityQueue()
+        frontier.push(self.initial_state, 0)
+        explored = set()
         
-        for direction in directions:
-            new_char_pos = (char_pos[0] + direction[0], char_pos[1] + direction[1])
+        # Track costs and paths
+        g_score = {self.initial_state.get_state_key(): 0}
+        came_from = {}
+        steps = 0
+        
+        while not frontier.empty():
+            current_state = frontier.pop()
+            current_key = current_state.get_state_key()
+            logger.debug(f"Current state:\n{current_state}")
+            logger.debug(f"Current cost: {g_score[current_key]}")
+            if current_state.is_solved():
+                execution_time = time.time() - start_time
+                memory_used = (process.memory_info().rss - initial_memory) / 1024 / 1024  # Convert to MB
+                
+                return SearchResult(
+                    steps=steps,
+                    path=current_state.get_path(),
+                    explored_states=len(explored),
+                    execution_time=execution_time,
+                    memory_used=memory_used,
+                    cost=g_score[current_key]
+                )
+            
+            if current_key in explored:
+                continue
+                
+            explored.add(current_key)
+            for successor_state, move_cost in current_state.get_successor_states():
+                successor_key = successor_state.get_state_key()
+                tentative_g_score = g_score[current_key] + move_cost
+                if successor_key not in g_score or tentative_g_score < g_score[successor_key]:
+                    came_from[successor_key] = current_state
+                    g_score[successor_key] = tentative_g_score
+                    frontier.push(successor_state, tentative_g_score)
+                    steps += 1
+                logger.debug(f"Steps: {steps}, Explored: {len(explored)}")
+        return None
 
-            if new_char_pos in stone_positions:
-                stone_index = stone_positions.index(new_char_pos)
-                new_stone_pos = (new_char_pos[0] + direction[0], new_char_pos[1] + direction[1])
+        
+    def a_star_search(self) -> Optional[SearchResult]:
+        start_time = self._checking_setup()
+        frontier = PriorityQueue()
+        initial_heuristic = self.initial_state.get_heuristic()
+        frontier.push(self.initial_state, initial_heuristic)
+        explored = set()
+        came_from = {}
+        g_score = {self.initial_state.get_state_key(): 0}
+        f_score = {self.initial_state.get_state_key(): initial_heuristic}
+        steps = 0
 
-                if is_valid_push(char_pos, new_char_pos, direction, grid, stone_positions):
-                    new_stone_positions = list(stone_positions)
-                    new_stone_positions[stone_index] = new_stone_pos  
-                    new_state = (new_char_pos, tuple(new_stone_positions))  
-                    new_path = path + move_mapping[(direction[0], direction[1], "push")]
-                    frontier.append((new_state, new_path))
+        while not frontier.empty():
+            current_state = frontier.pop()
+            logger.info(f"Exploring State:\n{current_state}")
+            logger.info(f"Heuristic Cost: {current_state.get_heuristic()}")
+            logger.info(f"Steps: {steps}")
 
-            elif is_valid_move(new_char_pos, grid, stone_positions):
-                new_state = (new_char_pos, stone_positions)  
-                new_path = path + move_mapping[(direction[0], direction[1])]
-                step += 1 
-                frontier.append((new_state, new_path)) 
+            if current_state.is_solved():
+                exec_time, memory = self._end_profiling(start_time)
+                return SearchResult(
+                    steps=steps,
+                    path=current_state.get_path(),
+                    explored_states=len(explored),
+                    execution_time=exec_time,
+                    memory_used=memory,
+                    cost=g_score[current_state.get_state_key()]
+                )
+            
+            state_key = current_state.get_state_key()
+            if state_key in explored:
+                continue
+                
+            explored.add(state_key)
+            
+            for successor_state, move_cost in current_state.get_successor_states():  
+                successor_key = successor_state.get_state_key()
+                tentative_g_score = tentative_g_score = g_score[state_key] + move_cost
 
-    return None, None, None, None
+                if successor_key not in g_score or tentative_g_score < g_score[successor_key]:
+                    came_from[successor_key] = current_state
+                    g_score[successor_key] = tentative_g_score
+                    successor_heuristic = successor_state.get_heuristic()
+                    f_score[successor_key] = tentative_g_score + successor_heuristic
+                    frontier.push(successor_state, f_score[successor_key])
+                    steps += 1
+        
+        return None
