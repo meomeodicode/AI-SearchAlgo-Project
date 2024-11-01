@@ -42,6 +42,8 @@ def main():
     searcher = Searcher(initial_state)
     
     search_methods = {
+        "DFS": searcher.depth_first_search,
+        "BFS": searcher.breadth_first_search,
         "A*": searcher.a_star_search,
         "Uniform Cost Search": searcher.uniform_cost_search
     }

@@ -171,7 +171,6 @@ class GameState:
                 new_state.set_cell(new_pos, "@")
                 new_state.target_found = False
             
-            # Update previous position
             new_state.set_cell(self.character_pos, "." if self.target_found else " ")
             new_state.moves_history.append(Direction.to_string(direction, False))
         

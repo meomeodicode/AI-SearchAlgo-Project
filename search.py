@@ -74,11 +74,42 @@ class Searcher:
                 
             explored.add(state_key)
             
-            for successor in current_state.get_successor_states():
+            for successor, move_cost in current_state.get_successor_states():
                 if successor.get_state_key() not in explored:
                     steps += 1
                     frontier.append((successor, path + [successor.get_path()[-1]]))
         
+        return None
+    
+    def depth_first_search(self) -> Optional[SearchResult]: 
+        start_time = self._checking_setup()
+        frontier = deque([(self.initial_state, [])])  
+        explored = set()
+        steps = 0
+
+        while frontier:
+            current_state, path = frontier.pop()  
+            if current_state.is_solved():
+                exec_time, memory = self._end_profiling(start_time)
+                return SearchResult(
+                    steps=steps,
+                    path=current_state.get_path(),
+                    explored_states=len(explored),
+                    execution_time=exec_time,
+                    memory_used=memory
+                )
+            
+            state_key = current_state.get_state_key()
+            if state_key in explored:
+                continue
+                
+            explored.add(state_key)
+            
+            for successor, move_cost in current_state.get_successor_states():
+                if successor.get_state_key() not in explored:
+                    steps += 1
+                    frontier.append((successor, path + [successor.get_path()[-1]]))
+
         return None
     
     def uniform_cost_search(self) -> Optional[SearchResult]:
@@ -90,12 +121,10 @@ class Searcher:
         process = psutil.Process()
         initial_memory = process.memory_info().rss
         
-        # Initialize data structures
         frontier = PriorityQueue()
         frontier.push(self.initial_state, 0)
         explored = set()
         
-        # Track costs and paths
         g_score = {self.initial_state.get_state_key(): 0}
         came_from = {}
         steps = 0
@@ -105,6 +134,7 @@ class Searcher:
             current_key = current_state.get_state_key()
             logger.debug(f"Current state:\n{current_state}")
             logger.debug(f"Current cost: {g_score[current_key]}")
+            
             if current_state.is_solved():
                 execution_time = time.time() - start_time
                 memory_used = (process.memory_info().rss - initial_memory) / 1024 / 1024  # Convert to MB
