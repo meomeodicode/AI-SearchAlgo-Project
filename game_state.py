@@ -9,7 +9,7 @@ logging.basicConfig(level=logging.INFO,
                    format='%(asctime)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
 
-@dataclass
+@dataclass(frozen=True)
 class Position:
     row: int  
     col: int  
@@ -42,7 +42,7 @@ class Direction:
         return mapping.get((direction.row, direction.col), '')
 
 class GameState:
-    def __init__(self, grid: List[List[str]], stone_weights: Optional[List[float]] = None, parent=None):
+    def __init__(self, grid: List[List[str]], stone_weights: Optional[Dict[Position, float]] = None, parent=None):
         self.grid = [row[:] for row in grid]
         self.height = len(grid)
         self.width = len(grid[0]) if grid else 0
@@ -50,14 +50,10 @@ class GameState:
         self.g_cost = 0 if parent is None else parent.g_cost
         self.moves_history = []
         self.move_cost = []
-        self.target_found = False  
-        
-        logger.debug(f"Grid dimensions: {self.height}x{self.width}")
-        logger.debug("Initial grid state:\n" + str(self))
+        self.target_found = False
         
         try:
             self.character_pos = self._find_character()
-            logger.debug(f"Character position found at: {self.character_pos}")
         except ValueError as e:
             logger.error(f"Character position error: {e}")
             logger.error("Grid state:\n" + str(self))
@@ -68,9 +64,11 @@ class GameState:
         self.completed_targets = self._find_completed_targets()
         
         if stone_weights is None:
-            self.stone_weights = [1.0] * len(self.stones)
+            self.stone_weights = {stone: 1.0 for stone in self.stones}
         else:
-            self.stone_weights = stone_weights[:len(self.stones)]
+            self.stone_weights = stone_weights.copy() if isinstance(stone_weights, dict) else {
+                stone: weight for stone, weight in zip(self.stones, stone_weights)
+            }
             
         if parent:
             self.moves_history = parent.moves_history.copy()
@@ -129,10 +127,6 @@ class GameState:
         return self.get_cell(pos) in [".", "*", "+"]
     
     def try_move(self, direction: Position) -> Optional['GameState']:
-        """
-        Attempt to move in the given direction. Returns new GameState if move is valid, None otherwise.
-        Handles both regular moves and pushing stones.
-        """
         new_pos = self.character_pos + direction
         if not self.is_valid_position(new_pos):
             return None
@@ -145,7 +139,11 @@ class GameState:
         if is_push:
             push_pos = new_pos + direction
             if not self.is_valid_position(push_pos) or self.is_stone_at(push_pos):
-                return None 
+                return None
+
+            if new_pos in self.stone_weights:
+                new_state.stone_weights[push_pos] = self.stone_weights[new_pos]
+                del new_state.stone_weights[new_pos]
 
             if self.is_target_at(push_pos):
                 new_state.set_cell(push_pos, "*")
@@ -163,7 +161,7 @@ class GameState:
             
             new_state.moves_history.append(Direction.to_string(direction, True))
         
-        else: 
+        else:
             if self.is_target_at(new_pos):
                 new_state.set_cell(new_pos, "+")
                 new_state.target_found = True
@@ -174,7 +172,6 @@ class GameState:
             new_state.set_cell(self.character_pos, "." if self.target_found else " ")
             new_state.moves_history.append(Direction.to_string(direction, False))
         
-        # Update state costs and position
         new_state.g_cost = self.g_cost + move_cost
         if not hasattr(new_state, 'move_cost'):
             new_state.move_cost = []
@@ -202,10 +199,8 @@ class GameState:
         if not is_push:
             return base_cost  
         else:
-            stone_weight = 2
-            return base_cost + stone_weight
-        
-        return base_cost
+            stone_pos = self.character_pos + direction
+        return base_cost + self.stone_weights.get(stone_pos, 1.0)
 
     def get_heuristic(self) -> float:
         remaining_stones = [stone for stone in self.stones if stone not in self.completed_targets]
@@ -214,8 +209,9 @@ class GameState:
             return 0
         distance_matrix = np.zeros((len(remaining_stones), len(remaining_targets)))
         for i, stone in enumerate(remaining_stones):
+            stone_weight = self.stone_weights.get(stone,1.0)
             for j, target in enumerate(remaining_targets):
-                distance_matrix[i][j] = stone.manhattan_distance(target) * self.stone_weights[i]
+                distance_matrix[i][j] = stone.manhattan_distance(target) * stone_weight
                 
         row_ind, col_ind = linear_sum_assignment(distance_matrix)
         return distance_matrix[row_ind, col_ind].sum()

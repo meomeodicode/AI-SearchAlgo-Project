@@ -1,26 +1,30 @@
-from game_state import GameState
+from game_state import GameState, Position
 from search import Searcher
 from typing import List, Dict, Tuple
 import time
 
 def create_test_level(level_num: int = 1) -> Tuple[List[List[str]], List[float]]:
-    levels = {
-        1: ([ # Simple level with two stones
+  levels = {
+    1: ([
             ["#", "#", "#", "#", "#"],
             ["#", "@", "$", ".", "#"],
             ["#", " ", "$", ".", "#"],
             ["#", "#", "#", "#", "#"]
-        ], [1.0, 2.0]),
-        
-        2: ([ # More complex level with three stones
+        ], 
+        {Position(1, 2): 1.0, Position(2, 2): 2.0}
+    ),
+
+    2: ([
             ["#", "#", "#", "#", "#", "#", "#"],
             ["#", " ", " ", "@", " ", " ", "#"],
             ["#", " ", "$", "$", "$", " ", "#"],
             ["#", " ", ".", ".", ".", " ", "#"],
             ["#", "#", "#", "#", "#", "#", "#"]
-        ], [1.0, 1.5, 2.0]),
+        ], 
+        {Position(2, 2): 1.0, Position(2, 3): 1.5, Position(2, 4): 2.0}
+    ),
 
-        3: ([ # Challenging level with four stones
+    3: ([
             ["#", "#", "#", "#", "#", "#", "#"],
             ["#", "@", " ", " ", " ", " ", "#"],
             ["#", " ", "$", "$", " ", " ", "#"],
@@ -28,9 +32,13 @@ def create_test_level(level_num: int = 1) -> Tuple[List[List[str]], List[float]]
             ["#", " ", ".", ".", " ", " ", "#"],
             ["#", " ", ".", ".", " ", " ", "#"],
             ["#", "#", "#", "#", "#", "#", "#"]
-        ], [1.0, 1.0, 1.5, 2.0])
-    }
-    return levels.get(level_num, levels[1])
+        ], 
+        {Position(2, 2): 1.0, Position(2, 3): 1.0, Position(3, 2): 1.5, Position(3, 3): 2.0}
+    )
+  }
+  return levels.get(level_num, levels[1])
+
+
 
 def main():
     grid, weights = create_test_level(2)
