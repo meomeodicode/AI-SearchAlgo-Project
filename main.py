@@ -1,51 +1,61 @@
 from game_state import GameState, Position
-from search import Searcher
-from typing import List, Dict, Tuple
+from search import Searcher, SearchResult
+from typing import List, Dict, Tuple, Optional
 import time
+import ast
 
-def create_test_level(level_num: int = 1) -> Tuple[List[List[str]], List[float]]:
-  levels = {
-    1: ([
-            ["#", "#", "#", "#", "#"],
-            ["#", "@", "$", ".", "#"],
-            ["#", " ", "$", ".", "#"],
-            ["#", "#", "#", "#", "#"]
-        ], 
-        {Position(1, 2): 1.0, Position(2, 2): 2.0}
-    ),
 
-    2: ([
-            ["#", "#", "#", "#", "#", "#", "#"],
-            ["#", " ", " ", "@", " ", " ", "#"],
-            ["#", " ", "$", "$", "$", " ", "#"],
-            ["#", " ", ".", ".", ".", " ", "#"],
-            ["#", "#", "#", "#", "#", "#", "#"]
-        ], 
-        {Position(2, 2): 1.0, Position(2, 3): 1.5, Position(2, 4): 2.0}
-    ),
+def get_test(filename) -> Tuple[List[List[str]], Dict[Position, float]]:
+    """
+    Read a Sokoban level from a file.
+    First line: row,col:weight pairs separated by spaces (e.g., "1,2:1.0 2,2:2.0")
+    Remaining lines: grid using #@$. characters
+    """
+    try:
+        with open(filename, 'r') as file:
+            weight_line = file.readline().strip()
+            weights = {}
+            if weight_line:
+                for pair in weight_line.split():
+                    pos, weight = pair.split(':')
+                    row, col = map(float, pos.strip("()").split(','))
+                    weights[Position(row, col)] = float(weight)
+            
+            grid = [list(line.strip()) for line in file if line.strip()]
+            
+            return grid, weights
+            
+    except Exception as e:
+        print(f"Error reading {filename}: {e}")
+        raise
 
-    3: ([
-            ["#", "#", "#", "#", "#", "#", "#"],
-            ["#", "@", " ", " ", " ", " ", "#"],
-            ["#", " ", "$", "$", " ", " ", "#"],
-            ["#", " ", "$", "$", " ", " ", "#"],
-            ["#", " ", ".", ".", " ", " ", "#"],
-            ["#", " ", ".", ".", " ", " ", "#"],
-            ["#", "#", "#", "#", "#", "#", "#"]
-        ], 
-        {Position(2, 2): 1.0, Position(2, 3): 1.0, Position(3, 2): 1.5, Position(3, 3): 2.0}
-    )
-  }
-  return levels.get(level_num, levels[1])
+def write_output(output_file, result: Optional[SearchResult]):
+    try:
+        with open(output_file, 'w', encoding='utf-8') as file:
+            if result:
+                file.write(f"Solution found:\n")
+                file.write(f"Moves: {len(result.path)}\n")
+                file.write(f"Path: {''.join(result.path)}\n")
+                file.write(f"States explored: {result.explored_states}\n")
+                file.write(f"Time: {result.execution_time:.3f} seconds\n")
+                file.write(f"Memory: {result.memory_used:.2f} MB\n")
+                if hasattr(result, 'cost'):
+                    file.write(f"Path cost: {result.cost:.2f}\n")
+            else:
+                file.write("No solution found\n")
+                
+    except Exception as e:
+        raise Exception(f"Error writing to {output_file}: {str(e)}")
 
 
 
 def main():
-    grid, weights = create_test_level(2)
+    grid, weights = get_test("input/input-02.txt")
     print("Initial state:")
     print('\n'.join(''.join(row) for row in grid))
     print(f"\nStone weights: {weights}")
-    
+    output_filename = "output\output-01.txt"
+
     initial_state = GameState(grid, stone_weights=weights)
     searcher = Searcher(initial_state)
     
@@ -62,18 +72,8 @@ def main():
     for name, method in search_methods.items():
         print(f"\nTrying {name}...")
         result = method()
-        
-        if result:
-            print(f"{name} found solution:")
-            print(f"- Moves: {len(result.path)}")
-            print(f"- Path: {''.join(result.path)}")
-            print(f"- States explored: {result.explored_states}")
-            print(f"- Time taken: {result.execution_time:.3f} seconds")
-            print(f"- Memory used: {result.memory_used:.2f} MB")
-            if hasattr(result, 'cost'):
-                print(f"- Path cost: {result.cost:.2f}")
-        else:
-            print(f"{name} failed to find solution")
+        write_output(output_filename, result)
+        print(f"Results for {name} written to {output_filename}")
     
     print("\nSearch complete!")
 
