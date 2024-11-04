@@ -1,1 +1,35 @@
-No solution found
+Solutions
+==================================================
+
+DFS:
+Moves: 273
+Path: rrrrrrrulllllLrrrrrrdllllllllluurrDrrrrrrrdllllllLrrrrrrrulllllllurrrrrrrulllllllldldRRRRRRRRlllllllldRRRRRRllllllurrrrrrrrdrUllllllllldrrrrrrRlllllllurrrrrrrrrdLLrrulllllllllurrrrrrrrurDllllllllldrrrrrrrrdlLrrrUlllllllllurrrrrrrrurDDllllllllldrrrrRRllllllurrrrrrrrdLLLLLLL
+States explored: 828
+Time: 0.316 seconds
+Memory: 2.86 MB
+Path cost: 0.00
+
+BFS:
+Moves: 16
+Path: uLulDrrRRRRRRurD
+States explored: 10089
+Time: 3.965 seconds
+Memory: 25.86 MB
+Path cost: 0.00
+
+Uniform Cost Search:
+Moves: 16
+Path: uLulDrrRRRRRRurD
+States explored: 12204
+Time: 1.578 seconds
+Memory: 10.28 MB
+Path cost: 25.00
+
+A*:
+Moves: 16
+Path: uLulDrrRRRRRRurD
+States explored: 4302
+Time: 6.749 seconds
+Memory: 13.26 MB
+Path cost: 25.00
+

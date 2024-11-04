@@ -4,13 +4,7 @@ from typing import List, Dict, Tuple, Optional
 import time
 import ast
 
-
 def get_test(filename) -> Tuple[List[List[str]], Dict[Position, float]]:
-    """
-    Read a Sokoban level from a file.
-    First line: row,col:weight pairs separated by spaces (e.g., "1,2:1.0 2,2:2.0")
-    Remaining lines: grid using #@$. characters
-    """
     try:
         with open(filename, 'r') as file:
             weight_line = file.readline().strip()
@@ -18,7 +12,7 @@ def get_test(filename) -> Tuple[List[List[str]], Dict[Position, float]]:
             if weight_line:
                 for pair in weight_line.split():
                     pos, weight = pair.split(':')
-                    row, col = map(float, pos.strip("()").split(','))
+                    row, col = map(int, pos.strip("()").split(','))
                     weights[Position(row, col)] = float(weight)
             
             grid = [list(line.strip()) for line in file if line.strip()]
@@ -29,11 +23,11 @@ def get_test(filename) -> Tuple[List[List[str]], Dict[Position, float]]:
         print(f"Error reading {filename}: {e}")
         raise
 
-def write_output(output_file, result: Optional[SearchResult]):
+def write_output(output_file: str, output_for_path:str, result: Optional[SearchResult], method_name: str, mode: str = 'a'):
     try:
-        with open(output_file, 'w', encoding='utf-8') as file:
+        with open(output_file, mode, encoding='utf-8') as file:
+            file.write(f"{method_name}:\n")
             if result:
-                file.write(f"Solution found:\n")
                 file.write(f"Moves: {len(result.path)}\n")
                 file.write(f"Path: {''.join(result.path)}\n")
                 file.write(f"States explored: {result.explored_states}\n")
@@ -43,18 +37,32 @@ def write_output(output_file, result: Optional[SearchResult]):
                     file.write(f"Path cost: {result.cost:.2f}\n")
             else:
                 file.write("No solution found\n")
+            file.write("\n") 
+
+            with open(output_for_path, 'a', encoding='utf-8') as path_store:
+                if result:
+                    path_store.write(f"{''.join(result.path)}\n")
+                else:
+                    path_store.write(f"{method_name}: No solution found\n")
                 
     except Exception as e:
         raise Exception(f"Error writing to {output_file}: {str(e)}")
 
-
-
 def main():
-    grid, weights = get_test("input/input-02.txt")
+    output_filename = "output/output-01.txt" 
+    output_path = "output.txt"
+
+    open(output_filename, 'w').close() 
+    open(output_path, 'w').close() 
+    
+    with open(output_filename, 'w', encoding='utf-8') as file:
+        file.write("Solutions\n")
+        file.write("=" * 50 + "\n\n")
+
+    grid, weights = get_test("input/input-03.txt")
     print("Initial state:")
     print('\n'.join(''.join(row) for row in grid))
     print(f"\nStone weights: {weights}")
-    output_filename = "output\output-01.txt"
 
     initial_state = GameState(grid, stone_weights=weights)
     searcher = Searcher(initial_state)
@@ -62,20 +70,14 @@ def main():
     search_methods = {
         "DFS": searcher.depth_first_search,
         "BFS": searcher.breadth_first_search,
-        "A*": searcher.a_star_search,
-        "Uniform Cost Search": searcher.uniform_cost_search
+        "Uniform Cost Search": searcher.uniform_cost_search,
+        "A*": searcher.a_star_search
     }
     
-    print("\nTesting different search methods:")
-    print("-" * 50)
-    
     for name, method in search_methods.items():
-        print(f"\nTrying {name}...")
         result = method()
-        write_output(output_filename, result)
-        print(f"Results for {name} written to {output_filename}")
-    
-    print("\nSearch complete!")
+        write_output(output_filename, output_path, result, name)
+        
 
 if __name__ == "__main__":
     main()
