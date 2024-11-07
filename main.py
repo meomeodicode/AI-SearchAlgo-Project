@@ -48,7 +48,7 @@ def write_output(output_file: str, output_for_path:str, result: Optional[SearchR
     except Exception as e:
         raise Exception(f"Error writing to {output_file}: {str(e)}")
 
-def main():
+def main(selected_map_file):
     output_filename = "output/output-01.txt" 
     output_path = "output.txt"
 
@@ -59,7 +59,8 @@ def main():
         file.write("Solutions\n")
         file.write("=" * 50 + "\n\n")
 
-    grid, weights = get_test("input/input-03.txt")
+
+    grid, weights = get_test(selected_map_file)
     print("Initial state:")
     print('\n'.join(''.join(row) for row in grid))
     print(f"\nStone weights: {weights}")

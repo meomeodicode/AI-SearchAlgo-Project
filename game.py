@@ -1,6 +1,6 @@
 import pygame
 import sys
-
+from main import main
 pygame.init()
 
 screen_width, screen_height = 500, 500
@@ -107,7 +107,7 @@ def move_ares(dx, dy, push=False):
                 if rock_target_cell in [" ", "."]:
                     map_data[new_y][new_x] = special_cells.get((new_x, new_y), " ") 
                     under_ares = map_data[rock_new_y][rock_new_x] 
-                    map_data[rock_new_y][rock_new_x] = "$" if rock_target_cell == " " else "*"
+                    map_data[rock_new_y][rock_new_x] = "$" if rock_target_cell in [" "] else "*"
                     rock_data[(rock_new_x, rock_new_y)] = rock_data.pop((new_x, new_y))
                     
                     map_data[grid_y][grid_x] = special_cells.get((grid_x, grid_y), " ")
@@ -212,6 +212,7 @@ def map_selection_screen():
                         selected_map = i
                         selected_output = i
                         load_map(map_files[selected_map]) 
+                        main(map_files[selected_map])
                         active_dropdown = None
             elif active_dropdown == "algorithm":
                 for i, algorithm in enumerate(Algo):
