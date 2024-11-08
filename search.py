@@ -52,12 +52,12 @@ class Searcher:
 
     def breadth_first_search(self) -> Optional[SearchResult]:
         start_time = self._checking_setup()
-        frontier = deque([(self.initial_state, [])])
+        frontier = deque([(self.initial_state, [], 0)])  
         explored = set()
         steps = 0
 
         while frontier:
-            current_state, path = frontier.popleft()
+            current_state, path, current_cost = frontier.popleft()
             if current_state.is_solved():
                 exec_time, memory = self._end_profiling(start_time)
                 return SearchResult(
@@ -65,7 +65,8 @@ class Searcher:
                     path=current_state.get_path(),
                     explored_states=len(explored),
                     execution_time=exec_time,
-                    memory_used=memory
+                    memory_used=memory,
+                    cost=current_cost  
                 )
             
             state_key = current_state.get_state_key()
@@ -77,18 +78,19 @@ class Searcher:
             for successor, move_cost in current_state.get_successor_states():
                 if successor.get_state_key() not in explored:
                     steps += 1
-                    frontier.append((successor, path + [successor.get_path()[-1]]))
+                    new_cost = current_cost + move_cost  
+                    frontier.append((successor, path + [successor.get_path()[-1]], new_cost))
         
         return None
-    
+
     def depth_first_search(self) -> Optional[SearchResult]: 
         start_time = self._checking_setup()
-        frontier = deque([(self.initial_state, [])])  
+        frontier = deque([(self.initial_state, [], 0)]) 
         explored = set()
         steps = 0
 
         while frontier:
-            current_state, path = frontier.pop()  
+            current_state, path, current_cost = frontier.pop()
             if current_state.is_solved():
                 exec_time, memory = self._end_profiling(start_time)
                 return SearchResult(
@@ -96,7 +98,8 @@ class Searcher:
                     path=current_state.get_path(),
                     explored_states=len(explored),
                     execution_time=exec_time,
-                    memory_used=memory
+                    memory_used=memory,
+                    cost=current_cost 
                 )
             
             state_key = current_state.get_state_key()
@@ -108,15 +111,12 @@ class Searcher:
             for successor, move_cost in current_state.get_successor_states():
                 if successor.get_state_key() not in explored:
                     steps += 1
-                    frontier.append((successor, path + [successor.get_path()[-1]]))
+                    new_cost = current_cost + move_cost 
+                    frontier.append((successor, path + [successor.get_path()[-1]], new_cost))
 
         return None
     
     def uniform_cost_search(self) -> Optional[SearchResult]:
-        """
-        Implements Uniform Cost Search for weighted Sokoban puzzle.
-        Returns SearchResult with solution path and metrics, or None if no solution found.
-        """
         start_time = time.time()
         process = psutil.Process()
         initial_memory = process.memory_info().rss
@@ -137,7 +137,7 @@ class Searcher:
             
             if current_state.is_solved():
                 execution_time = time.time() - start_time
-                memory_used = (process.memory_info().rss - initial_memory) / 1024 / 1024  # Convert to MB
+                memory_used = (process.memory_info().rss - initial_memory) / 1024 / 1024 
                 
                 return SearchResult(
                     steps=steps,

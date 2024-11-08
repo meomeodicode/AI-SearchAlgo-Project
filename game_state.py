@@ -188,7 +188,6 @@ class GameState:
             new_state = self.try_move(direction)
             if new_state:
                 move_cost = new_state.g_cost - self.g_cost
-                logger.info(f"Move Cost for direction {direction}: {move_cost}")
                 successors.append((new_state, move_cost))
         return successors
 
