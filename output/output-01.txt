@@ -2,34 +2,34 @@ Solutions
 ==================================================
 
 DFS:
-Moves: 547
-Path: lllulldRRRRllllurrrrrDlllllulldRRRRRlllllurrrrrrrdLrDDrdLruluulLrrddrdlLrrulllllllldrrrrRRllllllurrrrrrruullLrrrddrdLruluulllLrrrrddrdlLrrulllllllldrrrrRRllllllurrrrrrruullllLrrrrrddrdLruluulllllulldRRRRRlllllurrrrrrrdddrdlLrruluuLrddrdllLrrruluulLrrddrdlllLrrrruluullLrrrddrdllllLrrrrrulllllllldrRRRllllurrrrrrrrdllLrrruluulllLrrrrddrdlllLrrrruluullllLrrrrrddrdllllLrrrrrulllllllldrRRRllllurrrrrrrrdllLrrruluulllllulldRRRRRRllllllurrrrrrrDDDrdLrullldRlLrrurrdLrulllldLrrRlllLrrrrurrdLrulllllllldRlurrrrrrrrdlLrrulllllllldrRllurrrrdLLrrurrrrdllLLL
-States explored: 2395
-Time: 4.462 seconds
-Memory: 6.38 MB
-Path cost: 4590.00
+Moves: 273
+Path: rrrrrrrulllllLrrrrrrdllllllllluurrDrrrrrrrdllllllLrrrrrrrulllllllurrrrrrrulllllllldldRRRRRRRRlllllllldRRRRRRllllllurrrrrrrrdrUllllllllldrrrrrrRlllllllurrrrrrrrrdLLrrulllllllllurrrrrrrrurDllllllllldrrrrrrrrdlLrrrUlllllllllurrrrrrrrurDDllllllllldrrrrRRllllllurrrrrrrrdLLLLLLL
+States explored: 828
+Time: 0.799 seconds
+Memory: 2.69 MB
+Path cost: 273.00
 
 BFS:
-Moves: 4
-Path: RldR
-States explored: 8
-Time: 0.007 seconds
-Memory: 0.02 MB
-Path cost: 0.00
+Moves: 16
+Path: uLulDrrRRRRRRurD
+States explored: 10089
+Time: 10.656 seconds
+Memory: 26.87 MB
+Path cost: 16.00
 
 Uniform Cost Search:
-Moves: 59
-Path: ullllldRRRRurDDDrdLLLLLLurrrrruuullllllldRRRRRRurDDDrdLLLLL
-States explored: 4391
-Time: 4.814 seconds
-Memory: 8.77 MB
-Path cost: 1486.00
+Moves: 16
+Path: uLulDrrRRRRRRurD
+States explored: 10089
+Time: 5.231 seconds
+Memory: 8.05 MB
+Path cost: 16.00
 
 A*:
-Moves: 59
-Path: ullllldRRRRurDDDrdLLLLLLurrrrruuullllllldRRRRRRurDDDrdLLLLL
-States explored: 3726
-Time: 12.258 seconds
-Memory: 3.88 MB
-Path cost: 1486.00
+Moves: 16
+Path: uLulDrrRRRRRRurD
+States explored: 1360
+Time: 2.848 seconds
+Memory: 5.18 MB
+Path cost: 16.00
 

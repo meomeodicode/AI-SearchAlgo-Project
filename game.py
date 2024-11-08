@@ -338,10 +338,8 @@ def start_game():
             if info_button_rect.collidepoint(mouse_pos):
                 current_screen = OUTPUT_SCREEN
             elif back_button_rect.collidepoint(mouse_pos):
-                selected_map = None
-                selected_algorithm = None
-                selected_output = None
                 current_screen = MAP_SELECTION
+                load_map(map_files[selected_map]) 
                 waiting = True  
                 path_index = 0  
                 step_count = 0  
