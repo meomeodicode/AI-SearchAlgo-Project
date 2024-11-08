@@ -100,26 +100,27 @@ def move_ares(dx, dy, push=False):
 
     if 0 <= new_x < len(map_data[0]) and 0 <= new_y < len(map_data):
         target_cell = map_data[new_y][new_x]
-        if push and target_cell == "$":
+        if push and target_cell in ["$", "*"]:
             rock_new_x, rock_new_y = new_x + dx, new_y + dy
             if 0 <= rock_new_x < len(map_data[0]) and 0 <= rock_new_y < len(map_data):
                 rock_target_cell = map_data[rock_new_y][rock_new_x]
+                if target_cell == "*" and rock_target_cell != ".":
+                    return  
                 if rock_target_cell in [" ", "."]:
-                    map_data[new_y][new_x] = special_cells.get((new_x, new_y), " ") 
-                    under_ares = map_data[rock_new_y][rock_new_x] 
-                    map_data[rock_new_y][rock_new_x] = "$" if rock_target_cell in [" "] else "*"
+                    map_data[new_y][new_x] = special_cells.get((new_x, new_y), " ")
+                    under_ares = rock_target_cell
+                    map_data[rock_new_y][rock_new_x] = "*" if rock_target_cell == "." else "$"
                     rock_data[(rock_new_x, rock_new_y)] = rock_data.pop((new_x, new_y))
-                    
                     map_data[grid_y][grid_x] = special_cells.get((grid_x, grid_y), " ")
-                    map_data[new_y][new_x] = "@" 
+                    map_data[new_y][new_x] = "@"
+                    
                     character_x, character_y = new_x * cell_size, new_y * cell_size
                     step_count += 1
                     return
-
         elif target_cell in [" ", "."]:
             map_data[grid_y][grid_x] = special_cells.get((grid_x, grid_y), " ")
-            under_ares = target_cell 
-            map_data[new_y][new_x] = "@" 
+            under_ares = target_cell
+            map_data[new_y][new_x] = "@"
             character_x, character_y = new_x * cell_size, new_y * cell_size
             step_count += 1
 def draw_map():

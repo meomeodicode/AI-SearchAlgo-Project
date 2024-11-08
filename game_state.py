@@ -129,12 +129,13 @@ class GameState:
     def try_move(self, direction: Position) -> Optional['GameState']:
         new_pos = self.character_pos + direction
         if not self.is_valid_position(new_pos):
-            return None
+            return None 
             
         new_state = GameState([row[:] for row in self.grid], self.stone_weights, self)
         new_state.target_found = self.target_found
         is_push = self.is_stone_at(new_pos)
         move_cost = self.calculate_move_cost(direction, is_push)
+        logger.info(f"Direction: {direction}, Is Push: {is_push}, Move Cost: {move_cost}")
 
         if is_push:
             push_pos = new_pos + direction
@@ -187,6 +188,7 @@ class GameState:
             new_state = self.try_move(direction)
             if new_state:
                 move_cost = new_state.g_cost - self.g_cost
+                logger.info(f"Move Cost for direction {direction}: {move_cost}")
                 successors.append((new_state, move_cost))
         return successors
 
@@ -195,12 +197,12 @@ class GameState:
         return len(self.completed_targets) == len(self.stone_targets)
 
     def calculate_move_cost(self, direction: Position, is_push: bool) -> float:
-        base_cost = 1.0 
-        if not is_push:
-            return base_cost  
-        else:
+        base_cost = 1.0
+        if is_push:
             stone_pos = self.character_pos + direction
-        return base_cost + self.stone_weights.get(stone_pos, 1.0)
+            stone_weight = self.stone_weights.get(stone_pos, 0.0)
+            return base_cost + stone_weight 
+        return base_cost
 
     def get_heuristic(self) -> float:
         remaining_stones = [stone for stone in self.stones if stone not in self.completed_targets]
@@ -209,9 +211,9 @@ class GameState:
             return 0
         distance_matrix = np.zeros((len(remaining_stones), len(remaining_targets)))
         for i, stone in enumerate(remaining_stones):
-            stone_weight = self.stone_weights.get(stone,1.0)
+            stone_weight = self.stone_weights.get(stone,0.0)
             for j, target in enumerate(remaining_targets):
-                distance_matrix[i][j] = stone.manhattan_distance(target) * stone_weight
+                distance_matrix[i][j] = stone.manhattan_distance(target) * (1+stone_weight)
                 
         row_ind, col_ind = linear_sum_assignment(distance_matrix)
         return distance_matrix[row_ind, col_ind].sum()

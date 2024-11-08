@@ -12,8 +12,8 @@ def get_test(filename) -> Tuple[List[List[str]], Dict[Position, float]]:
             if weight_line:
                 for pair in weight_line.split():
                     pos, weight = pair.split(':')
-                    row, col = map(int, pos.strip("()").split(','))
-                    weights[Position(row, col)] = float(weight)
+                    col, row = map(int, pos.strip("()").split(','))
+                    weights[Position(col,row)] = float(weight)
             
             grid = [list(line.strip()) for line in file if line.strip()]
             

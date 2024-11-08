@@ -9,7 +9,7 @@ from game_state import GameState
 from copy import deepcopy
 import psutil
 
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
 
 @dataclass
@@ -170,16 +170,16 @@ class Searcher:
         initial_heuristic = self.initial_state.get_heuristic()
         frontier.push(self.initial_state, initial_heuristic)
         explored = set()
-        came_from = {}
         g_score = {self.initial_state.get_state_key(): 0}
         f_score = {self.initial_state.get_state_key(): initial_heuristic}
         steps = 0
 
         while not frontier.empty():
             current_state = frontier.pop()
-            logger.info(f"Exploring State:\n{current_state}")
-            logger.info(f"Heuristic Cost: {current_state.get_heuristic()}")
-            logger.info(f"Steps: {steps}")
+            current_heuristic = current_state.get_heuristic()
+            current_g_score = g_score[current_state.get_state_key()]
+            logger.info(f"Expanding State:\n{current_state}")
+            logger.info(f"Current Heuristic: {current_heuristic}, g_score: {current_g_score}, f_score: {current_g_score + current_heuristic}")
 
             if current_state.is_solved():
                 exec_time, memory = self._end_profiling(start_time)
@@ -189,7 +189,7 @@ class Searcher:
                     explored_states=len(explored),
                     execution_time=exec_time,
                     memory_used=memory,
-                    cost=g_score[current_state.get_state_key()]
+                    cost=current_g_score
                 )
             
             state_key = current_state.get_state_key()
@@ -197,16 +197,16 @@ class Searcher:
                 continue
                 
             explored.add(state_key)
-            
             for successor_state, move_cost in current_state.get_successor_states():  
                 successor_key = successor_state.get_state_key()
-                tentative_g_score = tentative_g_score = g_score[state_key] + move_cost
-
+                tentative_g_score = current_g_score + move_cost
+                successor_heuristic = successor_state.get_heuristic()
+                f_score[successor_key] = tentative_g_score + successor_heuristic
+                logger.debug(f"Successor State: {successor_state}")
+                logger.debug(f"Successor Heuristic: {successor_heuristic}, Tentative g_score: {tentative_g_score}, f_score: {f_score[successor_key]}")
+                
                 if successor_key not in g_score or tentative_g_score < g_score[successor_key]:
-                    came_from[successor_key] = current_state
                     g_score[successor_key] = tentative_g_score
-                    successor_heuristic = successor_state.get_heuristic()
-                    f_score[successor_key] = tentative_g_score + successor_heuristic
                     frontier.push(successor_state, f_score[successor_key])
                     steps += 1
         
