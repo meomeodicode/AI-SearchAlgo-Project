@@ -12,9 +12,11 @@ WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
 GRAY = (200, 200, 200)
 HIGHLIGHT = (100, 100, 255)
+YELLOW = (255, 255, 0)
 
 fontOption = pygame.font.Font(None, 20)
-fontGame = pygame.font.Font(None, 36)
+fontGame = pygame.font.Font(None, 30)
+fontRock = pygame.font.Font(None, 16)
 
 waiting = True
 
@@ -28,12 +30,15 @@ selected_output = None
 button1_rect = pygame.Rect(25, 40, 100, option_height)
 button2_rect = pygame.Rect(200, 40, 100, option_height)
 start_button_rect = pygame.Rect(375, 40, 100, option_height)
+info_button_rect = pygame.Rect(380, screen_height-30, 250, 50)
+info_button_text = "Show Output"
 start_button_text = "Start"
 button1_text = "Select Map"
 button2_text = "Select Algo"
 
 MAP_SELECTION = "map_selection"
 GAME_SCREEN = "game_screen"
+OUTPUT_SCREEN = "output_screen"
 current_screen = MAP_SELECTION
 map_data = None
 
@@ -59,6 +64,18 @@ ares_image = pygame.transform.scale(ares_image, (cell_size, cell_size))
 
 rock_image = pygame.image.load("rock.png")
 rock_image = pygame.transform.scale(rock_image, (cell_size, cell_size))
+
+floor_image = pygame.image.load("IMG_8796.PNG") 
+floor_image = pygame.transform.scale(floor_image, (cell_size, cell_size))
+
+wall_image = pygame.image.load("brickwall.png") 
+wall_image = pygame.transform.scale(wall_image, (cell_size, cell_size))
+
+state1_image = pygame.image.load("blue.png") 
+state1_image = pygame.transform.scale(state1_image, (cell_size, cell_size))
+
+state2_image = pygame.image.load("red.png") 
+state2_image = pygame.transform.scale(state2_image, (cell_size, cell_size))
 
 special_cells = {}
 
@@ -126,23 +143,27 @@ def move_ares(dx, dy, push=False):
 def draw_map():
     for y, row in enumerate(map_data):
         for x, cell in enumerate(row):
-            color = colors.get(cell, (255, 255, 255))  
-            pygame.draw.rect(screen, color, (x * cell_size, y * cell_size, cell_size, cell_size))
-            if cell == "$":
+            screen.blit(floor_image, (x * cell_size, y * cell_size))
+            if cell == "#":
+                screen.blit(wall_image, (x * cell_size, y * cell_size))
+            elif cell == ".":
+                screen.blit(state2_image, (x * cell_size, y * cell_size))
+            elif cell == "*":
+                screen.blit(state1_image, (x * cell_size, y * cell_size))
+            elif cell == "$":
                 screen.blit(rock_image, (x * cell_size, y * cell_size))
                 if (x, y) in rock_data:
                     display_rock_number(rock_data[(x, y)], x, y)
 
     for x in range(0, screen_width, cell_size):
-        pygame.draw.line(screen, BLACK, (x, 0), (x, screen_height - 40))
+        pygame.draw.line(screen, WHITE, (x, 0), (x, screen_height - 40))
     for y in range(0, screen_height - 40, cell_size):
-        pygame.draw.line(screen, BLACK, (0, y), (screen_width, y))
+        pygame.draw.line(screen, WHITE, (0, y), (screen_width, y))
 
     screen.blit(ares_image, (character_x, character_y))
 
-def load_output():
+def load_output(file_name):
     strings_list = []
-    file_name = "output.txt"
     with open(file_name, "r") as file:
         for line in file:
             strings_list.append(line.strip())
@@ -152,6 +173,7 @@ def draw_button(rect, text, color):
     pygame.draw.rect(screen, GRAY, rect)
     button_text = fontOption.render(text, True, color)
     screen.blit(button_text, (rect.x + 10, rect.y + 5))
+    pygame.draw.rect(screen, BLACK, rect.inflate(4, 4), 2)
 
 def draw_options(rect, options, selected_index):
     for i, option_text in enumerate(options):
@@ -160,6 +182,7 @@ def draw_options(rect, options, selected_index):
         pygame.draw.rect(screen, color, option_rect)
         option_text = fontOption.render(option_text, True, BLACK)
         screen.blit(option_text, (option_rect.x + 10, option_rect.y + 5))
+        pygame.draw.rect(screen, BLACK, rect.inflate(4, 4), 2)
 
 def map_selection_screen():
     global active_dropdown, selected_map, selected_output, selected_algorithm, current_screen, path, path_index, step_count, game_result
@@ -188,8 +211,9 @@ def map_selection_screen():
         screen.blit(selected_algorithm_text, (200, 5))  
 
     if selected_map is not None and selected_algorithm is not None:
-        pygame.draw.rect(screen, HIGHLIGHT, start_button_rect)
+        pygame.draw.rect(screen, GRAY, start_button_rect)
         start_text = fontOption.render(start_button_text, True, BLACK)
+        pygame.draw.rect(screen, BLACK, start_button_rect.inflate(4, 4), 2)
     else:
         pygame.draw.rect(screen, GRAY, start_button_rect)
         start_text = fontOption.render(start_button_text, True, (150, 150, 150))  
@@ -221,7 +245,7 @@ def map_selection_screen():
                     if option_rect.collidepoint(mouse_pos):
                         selected_algorithm = i
                         print(f"Algorithm selected: {algorithm}")
-                        tmp = load_output()
+                        tmp = load_output("output.txt")
                         path = tmp[selected_algorithm]
                         path_index, step_count = 0, 0
                         game_result = None
@@ -233,7 +257,7 @@ def map_selection_screen():
 def display_rock_number(number, rock_x, rock_y):
     pos_x = rock_x * cell_size
     pos_y = rock_y * cell_size
-    number_surface = fontOption.render(str(number), True, (0, 0, 0)) 
+    number_surface = fontRock.render(str(number), True, YELLOW) 
 
     text_rect = number_surface.get_rect(center=(pos_x + cell_size // 2, pos_y + cell_size // 2))
     
@@ -246,20 +270,43 @@ def display_step_count():
 
 def display_result():
     if game_result:
-        result_text = fontGame.render(f"{game_result}", True, (122, 0, 0) if game_result == "Fail" else (0, 122, 0))
-        screen.blit(result_text, (screen_width // 2 - 50, screen_height - 30))
+        result_text = fontGame.render(f"{game_result}", True, (122, 0, 0) if game_result == "No Solution" else (0, 122, 0))
+        screen.blit(result_text, (screen_width // 2 - 70, screen_height - 30))
 
 def check_game_result():
     global game_result
-    game_result = "Successful" if all("$" not in row for row in map_data) else "Fail"
+    game_result = "Successful" if all("$" not in row for row in map_data) else "No Solution"
 
 def start_game():
     global path_index, waiting, game_result, selected_map, selected_algorithm, selected_output, current_screen, step_count
-    screen.fill((200, 200, 200))
+    screen.fill(WHITE)
     draw_map()
 
+    # Button dimensions and positioning
+    button_width = 70  # Width for both buttons
+    button_height = 20  # Height for both buttons
+    output_button_rect = pygame.Rect(390, screen_height - 30, 100, button_height)  # Show Output button
+    back_button_rect = pygame.Rect(420, screen_height - 490, button_width, button_height)  # Back button
+
+    # Draw the "Show Output" button
+    pygame.draw.rect(screen, GRAY, output_button_rect)  # Draw button background
+    button_text = fontOption.render("Show Output", True, BLACK)  # Button text
+    # Center the text in the button
+    text_rect = button_text.get_rect(center=(output_button_rect.centerx, output_button_rect.centery))
+    screen.blit(button_text, text_rect)  # Blit the button text
+    pygame.draw.rect(screen, BLACK, output_button_rect.inflate(4, 4), 2)
+
+    # Draw the back button
+    pygame.draw.rect(screen, GRAY, back_button_rect)  # Draw button background
+    back_text = fontOption.render("Back", True, BLACK)  # Back button text
+    # Center the text in the button
+    back_text_rect = back_text.get_rect(center=(back_button_rect.centerx, back_button_rect.centery))
+    screen.blit(back_text, back_text_rect)  # Blit the back button text
+    pygame.draw.rect(screen, BLACK, back_button_rect.inflate(4, 4), 2)
+    
+
     if waiting:
-        text = fontGame.render("Press Enter to start", True, (255, 255, 255))
+        text = fontGame.render("Press Enter to start", True, HIGHLIGHT)
         screen.blit(text, (screen_width // 2 - 100, screen_height // 2))
     else:
         if path_index < len(path):
@@ -286,7 +333,11 @@ def start_game():
         elif event.type == pygame.KEYDOWN:
             if event.key == pygame.K_RETURN and waiting:
                 waiting = False 
-            elif event.key == pygame.K_ESCAPE:
+        elif event.type == pygame.MOUSEBUTTONDOWN:
+            mouse_pos = event.pos
+            if info_button_rect.collidepoint(mouse_pos):
+                current_screen = OUTPUT_SCREEN
+            elif back_button_rect.collidepoint(mouse_pos):
                 selected_map = None
                 selected_algorithm = None
                 selected_output = None
@@ -296,6 +347,90 @@ def start_game():
                 step_count = 0  
                 game_result = None  
 
+def load_algorithms_output():
+    output_data = {}
+    algo_names = ["DFS", "BFS", "UCS", "A*"]
+
+    for algo in algo_names:
+        output_data[algo] = {}
+
+    try:
+        with open("output/output-01.txt", "r") as file:
+            lines = file.readlines()
+            current_algo = None
+
+            for line in lines:
+                line = line.strip()
+                if line.startswith("DFS:"):
+                    current_algo = "DFS"
+                elif line.startswith("BFS:"):
+                    current_algo = "BFS"
+                elif line.startswith("Uniform Cost Search:"):
+                    current_algo = "UCS"
+                elif line.startswith("A*:"):
+                    current_algo = "A*"
+                elif current_algo:
+                    if line.startswith("Moves:"):
+                        output_data[current_algo]["Moves"] = line.split(":")[1].strip()
+                    elif line.startswith("Time:"):
+                        output_data[current_algo]["Time"] = line.split(":")[1].strip()
+                    elif line.startswith("Memory:"):
+                        output_data[current_algo]["Memory"] = line.split(":")[1].strip()
+                    elif line.startswith("Path cost:"):
+                        output_data[current_algo]["Path Cost"] = line.split(":")[1].strip()
+
+    except FileNotFoundError:
+        print("Error: output/output-01.txt not found.")
+    
+    return output_data
+
+
+def output_screen():
+    """Display the contents of output/output-01.txt in a comparative table format."""
+    screen.fill(WHITE)  # Clear the screen
+    output_data = load_algorithms_output()  # Load the output data
+
+    headers = ["Algorithm", "Moves", "Time", "Memory", "Path Cost"]
+    y_offset = 50  # Initial vertical offset for the header
+    line_height = 30  # Height for each line
+
+    # Draw headers
+    for idx, header in enumerate(headers):
+        text_surface = fontOption.render(header, True, BLACK)
+        screen.blit(text_surface, (10 + idx * 100, y_offset))  # Position headers
+    pygame.draw.line(screen, BLACK, (10, y_offset + line_height-10), (screen_width - 10, y_offset + line_height-10))
+    y_offset += line_height  # Move down after headers
+
+    # Draw data for each algorithm
+    for algo in output_data.keys():
+        algo_data = output_data[algo]
+        screen.blit(fontOption.render(algo, True, BLACK), (20, y_offset))  # Algorithm name
+        screen.blit(fontOption.render(algo_data.get("Moves", ""), True, BLACK), (120, y_offset))  # Moves
+        screen.blit(fontOption.render(algo_data.get("Time", ""), True, BLACK), (180, y_offset))  # Time
+        screen.blit(fontOption.render(algo_data.get("Memory", ""), True, BLACK), (310, y_offset))  # Memory
+        screen.blit(fontOption.render(algo_data.get("Path Cost", ""), True, BLACK), (430, y_offset))  # Path Cost
+
+        pygame.draw.line(screen, BLACK, (10, y_offset + line_height-10), (screen_width - 10, y_offset + line_height-10))
+
+        y_offset += line_height 
+
+    # Draw back button
+    back_button_rect = pygame.Rect(25, screen_height - 40, 100, 30)
+    pygame.draw.rect(screen, GRAY, back_button_rect)
+    back_text = fontOption.render("Back", True, BLACK) 
+    back_text_rect = back_text.get_rect(center=(back_button_rect.centerx, back_button_rect.centery))
+    screen.blit(back_text, back_text_rect)
+    pygame.draw.rect(screen, BLACK, back_button_rect.inflate(4, 4), 2)
+
+    # Handle events
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            pygame.quit()
+            sys.exit()
+        elif event.type == pygame.MOUSEBUTTONDOWN:
+            if back_button_rect.collidepoint(event.pos):
+                global current_screen
+                current_screen = GAME_SCREEN 
 
 running = True
 while running:
@@ -304,5 +439,7 @@ while running:
     elif current_screen == GAME_SCREEN:
         start_game()
         pygame.time.Clock().tick(4)
+    elif current_screen == OUTPUT_SCREEN:
+        output_screen()
 
     pygame.display.flip()

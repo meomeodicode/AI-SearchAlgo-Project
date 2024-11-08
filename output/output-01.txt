@@ -2,34 +2,34 @@ Solutions
 ==================================================
 
 DFS:
-Moves: 38
-Path: rrruRRRRRlllllLrrrrrrdlllllllluRRRRRRR
-States explored: 68
-Time: 0.327 seconds
-Memory: 0.20 MB
+Moves: 4
+Path: RldR
+States explored: 4
+Time: 0.004 seconds
+Memory: 0.02 MB
 Path cost: 0.00
 
 BFS:
-Moves: 24
-Path: rrruRRRRRdllllllluRRRRRR
-States explored: 743
-Time: 3.621 seconds
-Memory: 0.71 MB
+Moves: 4
+Path: RldR
+States explored: 8
+Time: 0.007 seconds
+Memory: 0.02 MB
 Path cost: 0.00
 
 Uniform Cost Search:
-Moves: 24
-Path: rrruRRRRRdllllllluRRRRRR
-States explored: 792
-Time: 2.278 seconds
-Memory: 1.01 MB
-Path cost: 184.00
+Moves: 4
+Path: RldR
+States explored: 8
+Time: 0.004 seconds
+Memory: 0.00 MB
+Path cost: 7.00
 
 A*:
-Moves: 24
-Path: rrruRRRRRdllllllluRRRRRR
-States explored: 383
-Time: 2.992 seconds
-Memory: 0.58 MB
-Path cost: 184.00
+Moves: 4
+Path: RldR
+States explored: 7
+Time: 0.010 seconds
+Memory: 0.02 MB
+Path cost: 7.00
 
