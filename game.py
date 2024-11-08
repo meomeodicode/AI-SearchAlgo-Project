@@ -72,10 +72,10 @@ wall_image = pygame.image.load("brickwall.png")
 wall_image = pygame.transform.scale(wall_image, (cell_size, cell_size))
 
 state1_image = pygame.image.load("blue.png") 
-state1_image = pygame.transform.scale(state1_image, (cell_size, cell_size))
+state1_image = pygame.transform.scale(state1_image, (cell_size*0.8, cell_size*0.8))
 
 state2_image = pygame.image.load("red.png") 
-state2_image = pygame.transform.scale(state2_image, (cell_size, cell_size))
+state2_image = pygame.transform.scale(state2_image, (cell_size*0.8, cell_size*0.8))
 
 special_cells = {}
 
@@ -147,9 +147,9 @@ def draw_map():
             if cell == "#":
                 screen.blit(wall_image, (x * cell_size, y * cell_size))
             elif cell == ".":
-                screen.blit(state2_image, (x * cell_size, y * cell_size))
+                screen.blit(state2_image, (x * cell_size+0.1*cell_size, y * cell_size+0.1*cell_size))
             elif cell == "*":
-                screen.blit(state1_image, (x * cell_size, y * cell_size))
+                screen.blit(state1_image, (x * cell_size+0.1*cell_size, y * cell_size+0.1*cell_size))
             elif cell == "$":
                 screen.blit(rock_image, (x * cell_size, y * cell_size))
                 if (x, y) in rock_data:
@@ -301,7 +301,7 @@ def start_game():
     back_text = fontOption.render("Back", True, BLACK)  # Back button text
     # Center the text in the button
     back_text_rect = back_text.get_rect(center=(back_button_rect.centerx, back_button_rect.centery))
-    screen.blit(back_text, back_text_rect)  # Blit the back button text
+    screen.blit(back_text, back_text_rect)
     pygame.draw.rect(screen, BLACK, back_button_rect.inflate(4, 4), 2)
     
 
