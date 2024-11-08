@@ -48,13 +48,13 @@ colors = {
     "#": (100, 100, 100),  
     " ": (200, 200, 200), 
     "$": (200, 200, 200),  
-    "@": (255, 0, 0),      
+    "@": (200, 200, 200),      
     ".": (173, 216, 230),  
     "*": (165, 42, 42),    
     "+": (0, 0, 255),     
 }
 
-ares_image = pygame.image.load("ngaoda.png")
+ares_image = pygame.image.load("amongus.png")
 ares_image = pygame.transform.scale(ares_image, (cell_size, cell_size))
 
 rock_image = pygame.image.load("rock.png")
@@ -74,7 +74,7 @@ def load_map(filename):
         first_line = lines[0].strip().split()
         for rock_info in first_line:
             pos, weight = rock_info.split(":")
-            x, y = map(int, pos.strip("()").split(","))
+            y, x = map(int, pos.strip("()").split(","))
             rock_data[(x, y)] = float(weight)
 
         map_data = [list(line.strip()) for line in lines[1:]]
