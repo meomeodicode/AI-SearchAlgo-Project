@@ -3,3 +3,7 @@
 /__pycache__
 output/output-01.txt
 output.txt
+output.txt
+output/output-05.txt
+*.txt
+*.txt
