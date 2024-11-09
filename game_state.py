@@ -135,7 +135,6 @@ class GameState:
         new_state.target_found = self.target_found
         is_push = self.is_stone_at(new_pos)
         move_cost = self.calculate_move_cost(direction, is_push)
-        logger.info(f"Direction: {direction}, Is Push: {is_push}, Move Cost: {move_cost}")
 
         if is_push:
             push_pos = new_pos + direction

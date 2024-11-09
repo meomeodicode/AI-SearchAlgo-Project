@@ -131,10 +131,7 @@ class Searcher:
         
         while not frontier.empty():
             current_state = frontier.pop()
-            current_key = current_state.get_state_key()
-            logger.debug(f"Current state:\n{current_state}")
-            logger.debug(f"Current cost: {g_score[current_key]}")
-            
+            current_key = current_state.get_state_key()            
             if current_state.is_solved():
                 execution_time = time.time() - start_time
                 memory_used = (process.memory_info().rss - initial_memory) / 1024 / 1024 
@@ -160,7 +157,6 @@ class Searcher:
                     g_score[successor_key] = tentative_g_score
                     frontier.push(successor_state, tentative_g_score)
                     steps += 1
-                logger.debug(f"Steps: {steps}, Explored: {len(explored)}")
         return None
 
         
@@ -176,11 +172,8 @@ class Searcher:
 
         while not frontier.empty():
             current_state = frontier.pop()
-            current_heuristic = current_state.get_heuristic()
             current_g_score = g_score[current_state.get_state_key()]
-            logger.info(f"Expanding State:\n{current_state}")
-            logger.info(f"Current Heuristic: {current_heuristic}, g_score: {current_g_score}, f_score: {current_g_score + current_heuristic}")
-
+           
             if current_state.is_solved():
                 exec_time, memory = self._end_profiling(start_time)
                 return SearchResult(
@@ -202,9 +195,7 @@ class Searcher:
                 tentative_g_score = current_g_score + move_cost
                 successor_heuristic = successor_state.get_heuristic()
                 f_score[successor_key] = tentative_g_score + successor_heuristic
-                logger.debug(f"Successor State: {successor_state}")
-                logger.debug(f"Successor Heuristic: {successor_heuristic}, Tentative g_score: {tentative_g_score}, f_score: {f_score[successor_key]}")
-                
+
                 if successor_key not in g_score or tentative_g_score < g_score[successor_key]:
                     g_score[successor_key] = tentative_g_score
                     frontier.push(successor_state, f_score[successor_key])
