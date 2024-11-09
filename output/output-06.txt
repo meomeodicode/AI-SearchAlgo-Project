@@ -1,0 +1,32 @@
+DFS:
+Moves: 38
+Path: rrruRRRRRlllllLrrrrrrdlllllllluRRRRRRR
+States explored: 68
+Time: 0.049 seconds
+Memory: 0.17 MB
+Path cost: 218.00
+
+BFS:
+Moves: 24
+Path: rrruRRRRRdllllllluRRRRRR
+States explored: 743
+Time: 0.574 seconds
+Memory: 0.61 MB
+Path cost: 184.00
+
+Uniform Cost Search:
+Moves: 24
+Path: rrruRRRRRdllllllluRRRRRR
+States explored: 792
+Time: 0.354 seconds
+Memory: 0.00 MB
+Path cost: 184.00
+
+A*:
+Moves: 24
+Path: rrruRRRRRdllllllluRRRRRR
+States explored: 383
+Time: 0.628 seconds
+Memory: 0.58 MB
+Path cost: 184.00
+

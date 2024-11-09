@@ -3,6 +3,7 @@ from search import Searcher, SearchResult
 from typing import List, Dict, Tuple, Optional
 import time
 import ast
+import os
 
 def get_test(filename) -> Tuple[List[List[str]], Dict[Position, float]]:
     try:
@@ -23,39 +24,40 @@ def get_test(filename) -> Tuple[List[List[str]], Dict[Position, float]]:
         print(f"Error reading {filename}: {e}")
         raise
 
-def write_output(output_file: str, output_for_path:str, result: Optional[SearchResult], method_name: str, mode: str = 'a'):
+def write_output(output_file: str, output_for_table: str, output_for_path: str, 
+                result: Optional[SearchResult], method_name: str, mode: str = 'a'):
     try:
-        with open(output_file, mode, encoding='utf-8') as file:
-            file.write(f"{method_name}:\n")
-            if result:
-                file.write(f"Moves: {len(result.path)}\n")
-                file.write(f"Path: {''.join(result.path)}\n")
-                file.write(f"States explored: {result.explored_states}\n")
-                file.write(f"Time: {result.execution_time:.3f} seconds\n")
-                file.write(f"Memory: {result.memory_used:.2f} MB\n")
-                if hasattr(result, 'cost'):
-                    file.write(f"Path cost: {result.cost:.2f}\n")
-            else:
-                file.write("No solution found\n")
-            file.write("\n") 
+        output_content = [
+            f"{method_name}:\n",
+            f"Moves: {len(result.path)}\n" if result else "No solution found\n",
+            f"Path: {''.join(result.path)}\n" if result else "",
+            f"States explored: {result.explored_states}\n" if result else "",
+            f"Time: {result.execution_time:.3f} seconds\n" if result else "",
+            f"Memory: {result.memory_used:.2f} MB\n" if result else "",
+            f"Path cost: {result.cost:.2f}\n" if result and hasattr(result, 'cost') else "",
+            "\n"
+        ]
 
-            with open(output_for_path, 'a', encoding='utf-8') as path_store:
-                if result:
-                    path_store.write(f"{''.join(result.path)}\n")
-                else:
-                    path_store.write(f"{method_name}: No solution found\n")
-                
+        for file_path in [output_file, output_for_table]:
+            with open(file_path, mode, encoding='utf-8') as f:
+                f.writelines(output_content)
+        
+        with open(output_for_path, 'a', encoding='utf-8') as f:
+            f.write(f"{''.join(result.path)}\n" if result else f"{method_name}: No solution found\n")
+
     except Exception as e:
-        raise Exception(f"Error writing to {output_file}: {str(e)}")
-
-def main(selected_map_file):
-    output_filename = "output/output-01.txt" 
+        raise Exception(f"Error writing to files: {str(e)}")
+    
+def main(selected_map_file, selected_output):
+    output_table = "output/output_table.txt" 
     output_path = "output.txt"
-
-    open(output_filename, 'w').close() 
+    output_file = selected_output
+    print(f"Selected Output: {output_file}")
+    open(output_file,'w').close()
+    open(output_table, 'w').close() 
     open(output_path, 'w').close() 
     
-    with open(output_filename, 'w', encoding='utf-8') as file:
+    with open(output_table, 'w', encoding='utf-8') as file:
         file.write("Solutions\n")
         file.write("=" * 50 + "\n\n")
 
@@ -77,7 +79,7 @@ def main(selected_map_file):
     
     for name, method in search_methods.items():
         result = method()
-        write_output(output_filename, output_path, result, name)
+        write_output(output_file, output_table, output_path, result, name)
         
 
 if __name__ == "__main__":

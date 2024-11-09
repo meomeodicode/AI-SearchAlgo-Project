@@ -124,7 +124,7 @@ class Searcher:
         frontier = PriorityQueue()
         frontier.push(self.initial_state, 0)
         explored = set()
-        
+
         g_score = {self.initial_state.get_state_key(): 0}
         came_from = {}
         steps = 0

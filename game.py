@@ -21,6 +21,7 @@ fontRock = pygame.font.Font(None, 16)
 waiting = True
 
 map_files = [f"input/input-0{i}.txt" for i in range(1, 11)]
+output_files = [f"output/output-0{i}.txt" for i in range(1,11)]
 option_height = 20
 active_dropdown = None
 selected_map = None
@@ -237,7 +238,7 @@ def map_selection_screen():
                         selected_map = i
                         selected_output = i
                         load_map(map_files[selected_map]) 
-                        main(map_files[selected_map])
+                        main(map_files[selected_map], output_files[selected_output])
                         active_dropdown = None
             elif active_dropdown == "algorithm":
                 for i, algorithm in enumerate(Algo):
@@ -355,7 +356,7 @@ def load_algorithms_output():
         output_data[algo] = {}
 
     try:
-        with open("output/output-01.txt", "r") as file:
+        with open("output\output_table.txt", "r") as file:
             lines = file.readlines()
             current_algo = None
 
@@ -380,26 +381,26 @@ def load_algorithms_output():
                         output_data[current_algo]["Path Cost"] = line.split(":")[1].strip()
 
     except FileNotFoundError:
-        print("Error: output/output-01.txt not found.")
+        print("Error: output\output_table.txt not found.")
     
     return output_data
 
 
 def output_screen():
     """Display the contents of output/output-01.txt in a comparative table format."""
-    screen.fill(WHITE)  # Clear the screen
-    output_data = load_algorithms_output()  # Load the output data
+    screen.fill(WHITE)  
+    output_data = load_algorithms_output() 
 
     headers = ["Algorithm", "Moves", "Time", "Memory", "Path Cost"]
-    y_offset = 50  # Initial vertical offset for the header
-    line_height = 30  # Height for each line
+    y_offset = 50  
+    line_height = 30  
 
     # Draw headers
     for idx, header in enumerate(headers):
         text_surface = fontOption.render(header, True, BLACK)
-        screen.blit(text_surface, (10 + idx * 100, y_offset))  # Position headers
+        screen.blit(text_surface, (10 + idx * 100, y_offset)) 
     pygame.draw.line(screen, BLACK, (10, y_offset + line_height-10), (screen_width - 10, y_offset + line_height-10))
-    y_offset += line_height  # Move down after headers
+    y_offset += line_height  
 
     # Draw data for each algorithm
     for algo in output_data.keys():
