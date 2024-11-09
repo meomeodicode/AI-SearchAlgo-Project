@@ -58,7 +58,7 @@ ares_image = pygame.transform.scale(ares_image, (cell_size, cell_size))
 rock_image = pygame.image.load("images/rock.png")
 rock_image = pygame.transform.scale(rock_image, (cell_size, cell_size))
 
-floor_image = pygame.image.load("images/IMG_8796.PNG") 
+floor_image = pygame.image.load("images/grass.jpg") 
 floor_image = pygame.transform.scale(floor_image, (cell_size, cell_size))
 
 wall_image = pygame.image.load("images/brickwall.png") 

@@ -2,15 +2,15 @@ DFS:
 Moves: 105
 Path: rrrrrrrrrdllLrrrulllllllllldrrrrrRRRRllllllddrrRRRlllllldrdrrrrrrrulUrdldllllllluruuurrrrrrDDDrdLLLLLLLLL
 States explored: 693
-Time: 0.314 seconds
-Memory: 1.05 MB
+Time: 0.297 seconds
+Memory: 1.06 MB
 Path cost: 152.00
 
 BFS:
 Moves: 37
 Path: drrddrrRRRllllluurrrRRRdDDrdLLLLLLLLL
 States explored: 14409
-Time: 6.267 seconds
+Time: 6.839 seconds
 Memory: 30.49 MB
 Path cost: 74.00
 
@@ -18,15 +18,15 @@ Uniform Cost Search:
 Moves: 37
 Path: drrddrrRRRllllluurrrRRRdDDrdLLLLLLLLL
 States explored: 29397
-Time: 4.201 seconds
-Memory: 66.50 MB
+Time: 4.259 seconds
+Memory: 65.84 MB
 Path cost: 74.00
 
 A*:
 Moves: 49
 Path: drrrrrRRRddllLLLrrrrruulllllldDDurrrrrrddlllllLLL
 States explored: 3439
-Time: 1.852 seconds
+Time: 1.838 seconds
 Memory: 7.47 MB
 Path cost: 74.00
 

@@ -1,4 +1,4 @@
-rrurruullldlluuRlddrrrdrruuluullDDrrrddlldlluuRlluurrdrrrddllUllluurrdR
-uuluuRlddrrurruullDDullddrRlddrruUluR
-uuluuRlddrrurruullDDullddrRlddrruUluR
-uuluuRlddrrurruullDDullddrRlddrruUluR
+DFS: No solution found
+BFS: No solution found
+Uniform Cost Search: No solution found
+A*: No solution found
