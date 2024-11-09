@@ -2,14 +2,34 @@ Solutions
 ==================================================
 
 DFS:
-No solution found
+Moves: 71
+Path: rrurruullldlluuRlddrrrdrruuluullDDrrrddlldlluuRlluurrdrrrddllUllluurrdR
+States explored: 123
+Time: 0.043 seconds
+Memory: 0.28 MB
+Path cost: 665.00
 
 BFS:
-No solution found
+Moves: 37
+Path: uuluuRlddrrurruullDDullddrRlddrruUluR
+States explored: 263
+Time: 0.086 seconds
+Memory: 0.24 MB
+Path cost: 631.00
 
 Uniform Cost Search:
-No solution found
+Moves: 37
+Path: uuluuRlddrrurruullDDullddrRlddrruUluR
+States explored: 273
+Time: 0.025 seconds
+Memory: 0.36 MB
+Path cost: 631.00
 
 A*:
-No solution found
+Moves: 37
+Path: uuluuRlddrrurruullDDullddrRlddrruUluR
+States explored: 168
+Time: 0.065 seconds
+Memory: 0.15 MB
+Path cost: 631.00
 

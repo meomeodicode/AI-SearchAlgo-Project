@@ -52,7 +52,7 @@ path = []
 game_result = None
 character_x, character_y = 0, 0
 
-ares_image = pygame.image.load("images/amongus.png")
+ares_image = pygame.image.load("images/character.png")
 ares_image = pygame.transform.scale(ares_image, (cell_size, cell_size))
 
 rock_image = pygame.image.load("images/rock.png")
@@ -283,7 +283,7 @@ def map_selection_screen():
     draw_button(button2_rect, button2_text, algo_button_color)
 
     Algo = ["DFS", "BFS", "UCS", "A*"]
-    Map = ["map 1", "map 2", "map 3", "map 4", "map 5", "map 6", "map 7", "map 8", "map 9", "map 10"]
+    Map = ["Map 1", "Map 2", "Map 3", "Map 4", "Map 5", "Map 6", "Map 7", "Map 8", "Map 9", "Map 10"]
 
     if active_dropdown == "map":
         draw_options(button1_rect, Map, selected_map)
