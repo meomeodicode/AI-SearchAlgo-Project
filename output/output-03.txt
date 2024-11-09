@@ -1,0 +1,32 @@
+DFS:
+Moves: 273
+Path: rrrrrrrulllllLrrrrrrdllllllllluurrDrrrrrrrdllllllLrrrrrrrulllllllurrrrrrrulllllllldldRRRRRRRRlllllllldRRRRRRllllllurrrrrrrrdrUllllllllldrrrrrrRlllllllurrrrrrrrrdLLrrulllllllllurrrrrrrrurDllllllllldrrrrrrrrdlLrrrUlllllllllurrrrrrrrurDDllllllllldrrrrRRllllllurrrrrrrrdLLLLLLL
+States explored: 828
+Time: 2.635 seconds
+Memory: 2.87 MB
+Path cost: 273.00
+
+BFS:
+Moves: 16
+Path: uLulDrrRRRRRRurD
+States explored: 10089
+Time: 16.730 seconds
+Memory: 26.92 MB
+Path cost: 16.00
+
+Uniform Cost Search:
+Moves: 16
+Path: uLulDrrRRRRRRurD
+States explored: 10089
+Time: 7.130 seconds
+Memory: 8.07 MB
+Path cost: 16.00
+
+A*:
+Moves: 16
+Path: uLulDrrRRRRRRurD
+States explored: 1360
+Time: 3.747 seconds
+Memory: 5.17 MB
+Path cost: 16.00
+
