@@ -2,14 +2,34 @@ Solutions
 ==================================================
 
 DFS:
-No solution found
+Moves: 737
+Path: rrdlLrrdlLrrdlllllurRRllldrrrrruullLrrrdLrdlllllurrRllldrrrrUrdlllllurrrulurrrdLrdllllluRldrrrrrulullDRllldrRRllldrrrrruLrdlllllururrDrrdlLrrdlllllurRRllldrrrrruulllllurrrurrdLrdllllldrrrdrruLrdlllllurrurrrulLrrdllllldrrRllldrrrrruLrdllUrrdlllllurulurRlldrrRllldrrrrruLLrrdlllllurulurrrrrdlLLrrrdllLrrrdllllluRldrrUrrrdllllluuurDRRlllddrrrrruuLrdllldrrrdllllluuurDrrrrdllldlluRldrrrrrullurrulLrrdllllldrdrrrrullLrrrdllllluurrrrrullLrrrdllllldRRRllldrrrrruLrdlllllururrrrulllulldRRRlllurrrrDrdLrdlLrrdlllllurRRllldrrrrruulLrrdLrdlllllurrRllldrrrrUrdlllllurrruLrdrrdllllluuRRlldrrrrruullDllldrrRllldrrrrruLLrrdlllllururrurrdLrullllldrrDrrrdllLrrrullllldRRRlllurrrrrdLrulllllurrRllldrrrrrdlLrrullllldrRRlllurrrrruLrullllldrrRlllurrrrDrdLrdL
+States explored: 9755
+Time: 4.397 seconds
+Memory: 18.79 MB
+Path cost: 852.00
 
 BFS:
-No solution found
+Moves: 13
+Path: ldRDuurDDDrdL
+States explored: 4749
+Time: 2.255 seconds
+Memory: 15.33 MB
+Path cost: 20.00
 
 Uniform Cost Search:
-No solution found
+Moves: 13
+Path: ldRDuurDDDrdL
+States explored: 4752
+Time: 0.568 seconds
+Memory: 1.18 MB
+Path cost: 20.00
 
 A*:
-No solution found
+Moves: 13
+Path: ldRDuurDDDrdL
+States explored: 390
+Time: 0.229 seconds
+Memory: 1.38 MB
+Path cost: 20.00
 
