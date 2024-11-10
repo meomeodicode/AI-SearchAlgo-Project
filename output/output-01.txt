@@ -2,7 +2,7 @@ DFS:
 Moves: 4
 Path: RldR
 States explored: 4
-Time: 0.001 seconds
+Time: 0.002 seconds
 Memory: 0.02 MB
 Path cost: 7.00
 
@@ -10,7 +10,7 @@ BFS:
 Moves: 4
 Path: RldR
 States explored: 8
-Time: 0.002 seconds
+Time: 0.001 seconds
 Memory: 0.02 MB
 Path cost: 7.00
 
@@ -19,14 +19,14 @@ Moves: 4
 Path: RldR
 States explored: 8
 Time: 0.001 seconds
-Memory: 0.00 MB
+Memory: 0.01 MB
 Path cost: 7.00
 
 A*:
 Moves: 4
 Path: RldR
 States explored: 7
-Time: 0.002 seconds
+Time: 0.003 seconds
 Memory: 0.02 MB
 Path cost: 7.00
 
