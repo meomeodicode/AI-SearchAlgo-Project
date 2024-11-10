@@ -2,6 +2,7 @@ from game_state import GameState, Position
 from search import Searcher, SearchResult
 from typing import List, Dict, Tuple, Optional
 
+"please run the program by the game.py file"
 def get_test(filename) -> Tuple[List[List[str]], Dict[Position, float]]:
     try:
         with open(filename, 'r') as file:
@@ -49,6 +50,7 @@ def write_output(output_file: str, output_for_table: str, output_for_path: str,
         raise Exception(f"Error writing to files: {str(e)}")
     
 def main(selected_map_file, selected_output):
+    "please run the program by the game.py file"
     output_table = "output/output_table.txt" 
     output_path = "output.txt"
     output_file = selected_output
