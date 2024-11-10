@@ -1,9 +1,6 @@
 from game_state import GameState, Position
 from search import Searcher, SearchResult
 from typing import List, Dict, Tuple, Optional
-import time
-import ast
-import os
 
 def get_test(filename) -> Tuple[List[List[str]], Dict[Position, float]]:
     try:
@@ -55,7 +52,6 @@ def main(selected_map_file, selected_output):
     output_table = "output/output_table.txt" 
     output_path = "output.txt"
     output_file = selected_output
-    # print(f"Selected Output: {output_file}")
     open(output_file,'w').close()
     open(output_table, 'w').close() 
     open(output_path, 'w').close() 

@@ -1,35 +1,3 @@
 Solutions
 ==================================================
 
-DFS:
-Moves: 225
-Path: rrdllluLLddlluRldrrUlluurrDulldRRRRRllllldrdrUllurRRRdrrruullDldRldrrruLruLrdlLrrdlllUrrrulullDRlurrrdLrullDrrdldllURldrrruLrullLrrrdlLrrdlllUrrrullulDLLdlluurDDrurrrrrdlldlUrrrullLLLdlluRRRRRldrrruLrullDrrdldlluRldrrruulDrdL
-States explored: 8063
-Time: 2.451 seconds
-Memory: 4.46 MB
-Path cost: 7025.00
-
-BFS:
-Moves: 17
-Path: lLLulldRDuRRRurDD
-States explored: 1369
-Time: 0.547 seconds
-Memory: 3.63 MB
-Path cost: 1017.00
-
-Uniform Cost Search:
-Moves: 17
-Path: lLLulldRDuRRRurDD
-States explored: 2604
-Time: 0.216 seconds
-Memory: 2.08 MB
-Path cost: 1017.00
-
-A*:
-Moves: 17
-Path: lLLulldRDuRRRurDD
-States explored: 153
-Time: 0.056 seconds
-Memory: 0.42 MB
-Path cost: 1017.00
-
