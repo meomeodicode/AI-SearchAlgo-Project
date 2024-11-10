@@ -55,7 +55,7 @@ def main(selected_map_file, selected_output):
     output_table = "output/output_table.txt" 
     output_path = "output.txt"
     output_file = selected_output
-    print(f"Selected Output: {output_file}")
+    # print(f"Selected Output: {output_file}")
     open(output_file,'w').close()
     open(output_table, 'w').close() 
     open(output_path, 'w').close() 
@@ -66,12 +66,8 @@ def main(selected_map_file, selected_output):
 
 
     grid, weights = get_test(selected_map_file)
-    print("Initial state:")
-    print('\n'.join(''.join(row) for row in grid))
-    print(f"\nStone weights: {weights}")
 
     initial_state = GameState(grid, stone_weights=weights)
-    print(initial_state.character_pos)
     searcher = Searcher(initial_state)
     
     search_methods = {

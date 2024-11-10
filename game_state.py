@@ -54,7 +54,6 @@ class GameState:
         
         try:
             self.character_pos = self._find_character()
-            print(self.character_pos)
         except ValueError as e:
             logger.error(f"Character position error: {e}")
             logger.error("Grid state:\n" + str(self))

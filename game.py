@@ -98,9 +98,9 @@ def load_map(filename):
         for y, row in enumerate(map_data):
             for x, cell in enumerate(row):
                 if cell == "@":
-                    character_x, character_y = x, y
+                    character_x, character_y = x * cell_size, y * cell_size
                     under_ares = " "  
-                    map_data[y][x] = "@"  
+                    map_data[y][x] = "@" 
                 elif cell == "$":  
                     if rock_index < len(weights):
                         rock_data[(x, y)] = weights[rock_index]
@@ -108,10 +108,9 @@ def load_map(filename):
                     else:
                         print("Warning: Not enough weights provided for all rocks.")
                 elif cell == "." or cell == "*":  
-                    # Special cells
                     special_cells[(x, y)] = "."
 
-        print(f"Loaded {filename} successfully!")
+        # print(f"Loaded {filename} successfully!")
     except FileNotFoundError:
         print(f"Error: {filename} not found.")
         map_data = []
@@ -145,7 +144,6 @@ def draw_map(sel=False):
         pygame.draw.line(screen, WHITE, (x, tmp_y), (x, tmp_y + len(map_data) * cell_size))
     for y in range(tmp_y, tmp_y + len(map_data) * cell_size, cell_size):
         pygame.draw.line(screen, WHITE, (tmp_x, y), (tmp_x + len(map_data[0]) * cell_size, y))
-
     screen.blit(ares_image, (tmp_x + character_x, tmp_y + character_y))
 
 def move_ares(dx, dy, push=False):
@@ -329,6 +327,7 @@ def map_selection_screen():
                     option_rect = pygame.Rect(button1_rect.x, button1_rect.bottom + i * option_height, button1_rect.width, option_height)
                     if option_rect.collidepoint(mouse_pos):
                         selected_map = i
+                        print(f"Map selected: {Map[selected_map]}")
                         selected_output = i
                         selected_algorithm = None
                         load_map(map_files[selected_map]) 
