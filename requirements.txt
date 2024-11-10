@@ -1,0 +1,14 @@
+Libraries:
+- pygame
+- typing
+- scipy.optimize 
+- numpy
+- dataclasses
+- collections 
+- logging
+- heapq
+- time
+- tracemalloc
+- game_state 
+- copy  
+- psutil
