@@ -1,3 +1,35 @@
 Solutions
 ==================================================
 
+DFS:
+Moves: 7
+Path: RlLrDuU
+States explored: 10
+Time: 0.006 seconds
+Memory: 0.05 MB
+Path cost: 18.00
+
+BFS:
+Moves: 7
+Path: UdDuLrR
+States explored: 43
+Time: 0.012 seconds
+Memory: 0.14 MB
+Path cost: 18.00
+
+Uniform Cost Search:
+Moves: 7
+Path: UdLrRlD
+States explored: 43
+Time: 0.007 seconds
+Memory: 0.01 MB
+Path cost: 18.00
+
+A*:
+Moves: 7
+Path: UdDuLrR
+States explored: 43
+Time: 0.022 seconds
+Memory: 0.09 MB
+Path cost: 18.00
+
