@@ -229,12 +229,12 @@ def display_total_cost():
 
 def display_result():
     if game_result:
-        result_text = fontGame.render(f"{game_result}", True, (122, 0, 0) if game_result == "Fail" else (0, 122, 0))
+        result_text = fontGame.render(f"{game_result}", True, (122, 0, 0) if game_result == "No solution" else (0, 122, 0))
         screen.blit(result_text, (screen_width // 2 - 35, screen_height // 2))
 
 def check_game_result():
     global game_result
-    game_result = "Successful" if all("$" not in row for row in map_data) else "Fail"
+    game_result = "Successful" if all("$" not in row for row in map_data) else "No solution"
 
 def load_algorithms_output():
     output_data = {}
