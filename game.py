@@ -13,6 +13,7 @@ BLACK = (0, 0, 0)
 GRAY = (200, 200, 200)
 HIGHLIGHT = (100, 100, 255)
 YELLOW = (255, 255, 0)
+RED = (255, 0, 0)
 
 fontOption = pygame.font.Font(None, 20)
 fontGame = pygame.font.Font(None, 30)
@@ -20,8 +21,8 @@ fontRock = pygame.font.Font(None, 16)
 
 waiting = True
 
-map_files = [f"input/input-0{i}.txt" for i in range(1, 11)]
-output_files = [f"output/output-0{i}.txt" for i in range(1,11)]
+map_files = [f"input/input-0{i}.txt" for i in range(1, 12)]
+output_files = [f"output/output-0{i}.txt" for i in range(1,12)]
 option_height = 20
 active_dropdown = None
 selected_map = None
@@ -55,8 +56,8 @@ character_x, character_y = 0, 0
 ares_image = pygame.image.load("images/character.png")
 ares_image = pygame.transform.scale(ares_image, (cell_size, cell_size))
 
-rock_image = pygame.image.load("images/rock.png")
-rock_image = pygame.transform.scale(rock_image, (cell_size, cell_size))
+rock_image = pygame.image.load("images/gold.png")
+rock_image = pygame.transform.scale(rock_image, (cell_size*0.6, cell_size*0.6))
 
 floor_image = pygame.image.load("images/grass.jpg") 
 floor_image = pygame.transform.scale(floor_image, (cell_size, cell_size))
@@ -64,11 +65,11 @@ floor_image = pygame.transform.scale(floor_image, (cell_size, cell_size))
 wall_image = pygame.image.load("images/brickwall.png") 
 wall_image = pygame.transform.scale(wall_image, (cell_size, cell_size))
 
-state1_image = pygame.image.load("images/blue.png") 
-state1_image = pygame.transform.scale(state1_image, (cell_size*0.8, cell_size*0.8))
+state1_image = pygame.image.load("images/full_chest.png") 
+state1_image = pygame.transform.scale(state1_image, (cell_size, cell_size))
 
-state2_image = pygame.image.load("images/red.png") 
-state2_image = pygame.transform.scale(state2_image, (cell_size*0.8, cell_size*0.8))
+state2_image = pygame.image.load("images/empty_chest.png") 
+state2_image = pygame.transform.scale(state2_image, (cell_size, cell_size))
 
 special_cells = {}
 
@@ -82,29 +83,34 @@ def load_output(file_name):
 def load_map(filename):
     global map_data, character_x, character_y, rock_data, under_ares, special_cells
     rock_data = {}
-    special_cells.clear() 
+    special_cells.clear()
     
     try:
         with open(filename, 'r') as f:
             lines = f.readlines()
 
-        first_line = lines[0].strip().split()
-        for rock_info in first_line:
-            pos, weight = rock_info.split(":")
-            y, x = map(int, pos.strip("()").split(","))
-            rock_data[(x, y)] = float(weight)
+        weights = list(map(float, lines[0].strip().split()))
+        
+        rock_index = 0
 
         map_data = [list(line.strip()) for line in lines[1:]]
-
+        
         for y, row in enumerate(map_data):
             for x, cell in enumerate(row):
                 if cell == "@":
-                    character_x, character_y = x * cell_size, y * cell_size
+                    character_x, character_y = x, y
                     under_ares = " "  
                     map_data[y][x] = "@"  
+                elif cell == "$":  
+                    if rock_index < len(weights):
+                        rock_data[(x, y)] = weights[rock_index]
+                        rock_index += 1
+                    else:
+                        print("Warning: Not enough weights provided for all rocks.")
                 elif cell == "." or cell == "*":  
-                    special_cells[(x, y)] = "."  
-        
+                    # Special cells
+                    special_cells[(x, y)] = "."
+
         print(f"Loaded {filename} successfully!")
     except FileNotFoundError:
         print(f"Error: {filename} not found.")
@@ -127,11 +133,11 @@ def draw_map(sel=False):
             if cell == "#":
                 screen.blit(wall_image, (tmp_x + x * cell_size, tmp_y + y * cell_size))
             elif cell == ".":
-                screen.blit(state2_image, (tmp_x + x * cell_size + 0.1 * cell_size, tmp_y + y * cell_size + 0.1 * cell_size))
+                screen.blit(state2_image, (tmp_x + x * cell_size, tmp_y + y * cell_size))
             elif cell == "*":
-                screen.blit(state1_image, (tmp_x + x * cell_size + 0.1 * cell_size, tmp_y + y * cell_size + 0.1 * cell_size))
+                screen.blit(state1_image, (tmp_x + x * cell_size, tmp_y + y * cell_size))
             elif cell == "$":
-                screen.blit(rock_image, (tmp_x + x * cell_size, tmp_y + y * cell_size))
+                screen.blit(rock_image, (tmp_x + x * cell_size + 0.2 * cell_size, tmp_y + y * cell_size + 0.2 * cell_size))
                 if (x, y) in rock_data:
                     display_rock_number(rock_data[(x, y)], tmp_x/cell_size + x, tmp_y/cell_size + y)
 
@@ -208,7 +214,7 @@ def draw_options(rect, options, selected_index):
 def display_rock_number(number, rock_x, rock_y):
     pos_x = rock_x * cell_size
     pos_y = rock_y * cell_size
-    number_surface = fontRock.render(str(int(number)), True, YELLOW) 
+    number_surface = fontRock.render(str(int(number)), True, BLACK) 
 
     text_rect = number_surface.get_rect(center=(pos_x + cell_size // 2, pos_y + cell_size // 2))
     
@@ -283,7 +289,7 @@ def map_selection_screen():
     draw_button(button2_rect, button2_text, algo_button_color)
 
     Algo = ["DFS", "BFS", "UCS", "A*"]
-    Map = ["Map 1", "Map 2", "Map 3", "Map 4", "Map 5", "Map 6", "Map 7", "Map 8", "Map 9", "Map 10"]
+    Map = ["Map 1", "Map 2", "Map 3", "Map 4", "Map 5", "Map 6", "Map 7", "Map 8", "Map 9", "Map 10", "Map 11"]
 
     if active_dropdown == "map":
         draw_options(button1_rect, Map, selected_map)
