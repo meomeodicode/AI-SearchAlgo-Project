@@ -74,10 +74,9 @@ class Searcher:
                 continue
                 
             explored.add(state_key)
-            
+            steps += 1
             for successor, move_cost in current_state.get_successor_states():
                 if successor.get_state_key() not in explored:
-                    steps += 1
                     new_cost = current_cost + move_cost  
                     frontier.append((successor, path + [successor.get_path()[-1]], new_cost))
         
@@ -107,10 +106,9 @@ class Searcher:
                 continue
                 
             explored.add(state_key)
-            
+            steps += 1
             for successor, move_cost in current_state.get_successor_states():
                 if successor.get_state_key() not in explored:
-                    steps += 1
                     new_cost = current_cost + move_cost 
                     frontier.append((successor, path + [successor.get_path()[-1]], new_cost))
 

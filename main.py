@@ -11,12 +11,15 @@ def get_test(filename) -> Tuple[List[List[str]], Dict[Position, float]]:
             weight_line = file.readline().strip()
             weights = {}
             if weight_line:
-                for pair in weight_line.split():
-                    pos, weight = pair.split(':')
-                    col, row = map(int, pos.strip("()").split(','))
-                    weights[Position(col,row)] = float(weight)
-            
+                weight_list = list(map(float, weight_line.split()))
+    
             grid = [list(line.strip()) for line in file if line.strip()]
+            weight_index = 0
+            for row_idx, row in enumerate(grid):
+                for col_idx, cell in enumerate(row):
+                    if cell == '$' and weight_index < len(weight_list):
+                        weights[Position(row_idx, col_idx)] = weight_list[weight_index]
+                        weight_index += 1
             
             return grid, weights
             
@@ -68,6 +71,7 @@ def main(selected_map_file, selected_output):
     print(f"\nStone weights: {weights}")
 
     initial_state = GameState(grid, stone_weights=weights)
+    print(initial_state.character_pos)
     searcher = Searcher(initial_state)
     
     search_methods = {
