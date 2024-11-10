@@ -90,9 +90,7 @@ def load_map(filename):
             lines = f.readlines()
 
         weights = list(map(float, lines[0].strip().split()))
-        
         rock_index = 0
-
         map_data = [list(line.strip()) for line in lines[1:]]
         
         for y, row in enumerate(map_data):
@@ -159,31 +157,31 @@ def move_ares(dx, dy, push=False):
             if 0 <= rock_new_x < len(map_data[0]) and 0 <= rock_new_y < len(map_data):
                 rock_target_cell = map_data[rock_new_y][rock_new_x]
                 
-                if target_cell == "*" and rock_target_cell != ".":
-                    return  
-                
                 if rock_target_cell in [" ", "."]:
                     rock_weight = rock_data.get((new_x, new_y), 1) 
                     move_cost = 1 + rock_weight 
                     total_cost += move_cost  
 
-                    if target_cell == "*" and rock_target_cell == ".":
-                        map_data[new_y][new_x] = "."  
+                    if rock_target_cell == ".":
                         map_data[rock_new_y][rock_new_x] = "*" 
                     else:
-                        if target_cell == "*":
-                            map_data[new_y][new_x] = "."  
-                        map_data[rock_new_y][rock_new_x] = "*" if rock_target_cell == "." else "$"
+                        map_data[rock_new_y][rock_new_x] = "$"  
+                        
+                    if target_cell == "*":
+                        map_data[new_y][new_x] = "."  
+                    else:
+                        map_data[new_y][new_x] = " " 
 
-                    rock_data[(rock_new_x, rock_new_y)] = rock_data.pop((new_x, new_y))
-                
+                    if (new_x, new_y) in rock_data:
+                        rock_data[(rock_new_x, rock_new_y)] = rock_data.pop((new_x, new_y))
+                    
                     map_data[grid_y][grid_x] = special_cells.get((grid_x, grid_y), " ")
                     map_data[new_y][new_x] = "@"
-                    
                     character_x, character_y = new_x * cell_size, new_y * cell_size
                     step_count += 1
-                    return
-        
+                    return True
+                return False
+            
         elif target_cell in [" ", "."]:
             move_cost = 1  
             total_cost += move_cost 
@@ -193,6 +191,8 @@ def move_ares(dx, dy, push=False):
             map_data[new_y][new_x] = "@"
             character_x, character_y = new_x * cell_size, new_y * cell_size
             step_count += 1
+            return True
+    return False
 
 def draw_button(rect, text, color):
     pygame.draw.rect(screen, GRAY, rect)
@@ -233,9 +233,26 @@ def display_result():
         screen.blit(result_text, (screen_width // 2 - 35, screen_height // 2))
 
 def check_game_result():
-    global game_result
-    game_result = "Successful" if all("$" not in row for row in map_data) else "No solution"
+    global game_result, path_index, path
 
+    if isinstance(path, str):
+        return
+    
+    if path_index < len(path):
+        return
+
+    all_rocks_on_switches = True
+    rocks_found = False
+    for row in map_data:
+        if "$" in row:  
+            all_rocks_on_switches = False
+            rocks_found = True
+            break     
+    if not rocks_found or all_rocks_on_switches:
+        game_result = "Successful"
+    else:
+        game_result = "No solution"
+    
 def load_algorithms_output():
     output_data = {}
     algo_names = ["DFS", "BFS", "UCS", "A*"]
@@ -350,7 +367,6 @@ def map_selection_screen():
 
 def start_game():
     global path_index, path, waiting, game_result, selected_map, selected_algorithm, selected_output, current_screen, step_count, total_cost, speed_multiplier
-
     if 'speed_multiplier' not in globals():
         speed_multiplier = 1
 
@@ -405,20 +421,23 @@ def start_game():
     if waiting:
         text = fontGame.render("Press Enter to start", True, GRAY)
         screen.blit(text, (screen_width // 2 - 100, screen_height // 2))
+    
     else:
-        if path_index < len(path):
+        if isinstance(path, str) and "No solution" in path:
+            game_result = "No solution"
+        elif path_index < len(path):
             char = path[path_index]
-            if char == "u": move_ares(0, -1)
-            elif char == "d": move_ares(0, 1)
-            elif char == "l": move_ares(-1, 0)
-            elif char == "r": move_ares(1, 0)
-            elif char == "U": move_ares(0, -1, push=True)
-            elif char == "D": move_ares(0, 1, push=True)
-            elif char == "L": move_ares(-1, 0, push=True)
-            elif char == "R": move_ares(1, 0, push=True)
-            path_index += 1
-        else:
-            if game_result is None:
+            move_successful = False
+            if char == "u": move_successful = move_ares(0, -1)
+            elif char == "d": move_successful = move_ares(0, 1)
+            elif char == "l": move_successful = move_ares(-1, 0)
+            elif char == "r": move_successful = move_ares(1, 0)
+            elif char == "U": move_successful = move_ares(0, -1, push=True)
+            elif char == "D": move_successful = move_ares(0, 1, push=True)
+            elif char == "L": move_successful = move_ares(-1, 0, push=True)
+            elif char == "R": move_successful = move_ares(1, 0, push=True)
+            if move_successful:
+                path_index += 1
                 check_game_result()
         display_step_count()
         display_total_cost()
